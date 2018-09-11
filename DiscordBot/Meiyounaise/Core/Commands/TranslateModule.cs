@@ -26,7 +26,6 @@ namespace Meiyounaise.Core.Commands
 
         void getKey()
         {
-            string key = "";
             using (var Stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\TranslateKey.txt"), FileMode.Open, FileAccess.Read))
             using (var ReadToken = new StreamReader(Stream))
             {

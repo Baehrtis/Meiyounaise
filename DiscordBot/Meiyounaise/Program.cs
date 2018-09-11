@@ -75,8 +75,9 @@ namespace Meiyounaise
             if (!Result.IsSuccess)
             {
                 Console.WriteLine($"{DateTime.Now} at Commands] Something went wrong with executing a command. Text: {Context.Message.Content} | Error: {Result.ErrorReason}");
+                await Context.Channel.SendMessageAsync( $"Something went wrong. Error: `{Result.ErrorReason}`");
             }
-
+            
         }
     }
 }

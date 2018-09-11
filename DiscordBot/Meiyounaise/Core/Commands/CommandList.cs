@@ -24,6 +24,7 @@ namespace Meiyounaise.Core.Commands
                 })
                 .WithDescription("**Commands for the Bot. [] are necessary, () are optional**")
                 .AddField("&avatar [@User]", "Gets the provided users Avatar")
+                .AddField("Pictures","&bastard, &blod")
                 .AddField("&clap [Word to set] [Sentence]", "Places the first words between all other words in the sentence")
                 .AddField("&de (Text to Translate)", "Translates your text to German, if you provide no text, it translates the last message in the channel")
                 .AddField("&emotion [Image URL]", "Reads the Emotions of a face")
