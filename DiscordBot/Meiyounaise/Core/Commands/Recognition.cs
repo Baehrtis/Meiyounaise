@@ -14,12 +14,8 @@ using Microsoft.VisualBasic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-
 namespace Meiyounaise.Core.Commands
 {
-
-
-
     public class Recognition : ModuleBase<SocketCommandContext>
     {
         static byte[] GetImageAsByteArray(string imageFilePath)
@@ -41,7 +37,6 @@ namespace Meiyounaise.Core.Commands
                         stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
                     {
                         await contentStream.CopyToAsync(stream);
-
                     }
                 }
             }
@@ -70,8 +65,6 @@ namespace Meiyounaise.Core.Commands
                 await Context.Channel.SendMessageAsync($"Error downloading picture: `{e.Message}`");
                 cont = false;
             }
-
-
             if (cont)
             {
                 try
@@ -122,7 +115,6 @@ namespace Meiyounaise.Core.Commands
                     await Context.Channel.SendMessageAsync($"Error: `{e.Message}`");
                     await Context.Channel.SendMessageAsync(
                         "This means that either the API didn't recognize a face, or shit itself in other ways. Try a different picture");
-
                 }
             }
             System.GC.Collect();

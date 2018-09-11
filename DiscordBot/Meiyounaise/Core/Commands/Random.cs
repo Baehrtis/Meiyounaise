@@ -10,7 +10,6 @@ namespace Meiyounaise.Core.Commands
 {
     public class Random : ModuleBase<SocketCommandContext>
     {
-
         //CLAP
         [Command("clap"), Alias("klatsch"), Summary("Insert first word between all others")]
         public async Task Clap(string toIns, [Remainder]string text)
@@ -79,16 +78,7 @@ namespace Meiyounaise.Core.Commands
             finally
             {
                 await Context.Channel.SendMessageAsync("", false, Embed.Build());
-
             }
         }
-
-
-
     }
-
-
-
 }
-
-

@@ -48,14 +48,11 @@ namespace Meiyounaise.Core.Commands
                 fileStream.Position = 0;
 
                 await (Context.Client.CurrentUser).ModifyAsync(x => x.Avatar = image);
-
             }
             else
             {
                 await ReplyAsync("Only for the Bot Owner, sorry!");
             }
         }
-
     }
 }
-

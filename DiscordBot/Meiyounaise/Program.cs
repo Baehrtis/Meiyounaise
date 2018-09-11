@@ -16,7 +16,6 @@ namespace Meiyounaise
         static void Main(string[] args)
             => new Program().MainAsync().GetAwaiter().GetResult();
 
-
         private async Task MainAsync()
         {
             Client = new DiscordSocketClient(new DiscordSocketConfig
@@ -24,11 +23,12 @@ namespace Meiyounaise
                 LogLevel = LogSeverity.Info
             });
 
-            Commands = new CommandService(new CommandServiceConfig { 
+            Commands = new CommandService(new CommandServiceConfig
+            {
                 CaseSensitiveCommands = true,
                 DefaultRunMode = RunMode.Async,
                 LogLevel = LogSeverity.Debug
-        });
+            });
 
             Client.MessageReceived += Client_MessageReceived;
             await Commands.AddModulesAsync(Assembly.GetEntryAssembly());
@@ -36,7 +36,7 @@ namespace Meiyounaise
             Client.Ready += Client_Ready;
             Client.Log += Client_Log;
             string Token = "";
-            using (var Stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1",@"Data\Token.txt"),FileMode.Open,FileAccess.Read))
+            using (var Stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\Token.txt"), FileMode.Open, FileAccess.Read))
             using (var ReadToken = new StreamReader(Stream))
             {
                 Token = ReadToken.ReadToEnd();
@@ -50,14 +50,15 @@ namespace Meiyounaise
 
         private async Task Client_Log(LogMessage Message)
         {
-           Console.WriteLine($"{DateTime.Now} at {Message.Source}] {Message.Message}");
+            Console.WriteLine($"{DateTime.Now} at {Message.Source}] {Message.Message}");
+
         }
 
         private async Task Client_Ready()
         {
             Random ran = new Random();
-            string[] status= { "stndbild😡", "Kack Drecks Wissenschaftliche Arbeit Hurensohn","c"};
-            await Client.SetGameAsync(status[ran.Next(status.Length)],"https://twitch.tv/m3iy0u",StreamType.NotStreaming);
+            string[] status = { "stndbild😡", "Kack Drecks Wissenschaftliche Arbeit Hurensohn", "Fuck auf die Hater, Hans ist da" };
+            await Client.SetGameAsync(status[ran.Next(status.Length)], "https://twitch.tv/m3iy0u", StreamType.NotStreaming);
         }
 
         private async Task Client_MessageReceived(SocketMessage MessageParam)
@@ -75,9 +76,8 @@ namespace Meiyounaise
             if (!Result.IsSuccess)
             {
                 Console.WriteLine($"{DateTime.Now} at Commands] Something went wrong with executing a command. Text: {Context.Message.Content} | Error: {Result.ErrorReason}");
-                await Context.Channel.SendMessageAsync( $"Something went wrong. Error: `{Result.ErrorReason}`");
+                await Context.Channel.SendMessageAsync($"Something went wrong. Error: `{Result.ErrorReason}`");
             }
-            
         }
     }
 }

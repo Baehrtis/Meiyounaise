@@ -9,8 +9,6 @@ namespace Meiyounaise.Core.Commands
 {
     public class CommandList : ModuleBase<SocketCommandContext>
     {
-
-        //CLAP
         [Command("commands"), Alias("help"), Summary("Insert first word between all others")]
         public async Task commands()
         {
@@ -21,7 +19,7 @@ namespace Meiyounaise.Core.Commands
                     author
                         .WithName("Meiyounaise")
                         .WithIconUrl(botavatar);
-                })
+                }) //Avatar,Bilder,Clap,Emotion,Icon,Nickname,Quote,Status,Translate
                 .WithDescription("**Commands for the Bot. [] are necessary, () are optional**")
                 .AddField("&avatar [@User]", "Gets the provided users Avatar")
                 .AddField("Pictures","&bastard, &blod")
@@ -35,8 +33,5 @@ namespace Meiyounaise.Core.Commands
                 .AddField("&status [Game to play]", "Sets the Bot's Game (Playing X)");
             await Context.Channel.SendMessageAsync("",false,Embed.Build());
         }
-
     }
 }
-//Status,Nickname,Icon,Clap,Avatar,Quote,Emotion,Translate
-//Avatar,Clap,Emotion,Icon,Nickname,Quote,Status,Translate
