@@ -48,7 +48,7 @@ namespace Meiyounaise.Core.Commands
             return input.Replace(@"\n", "\n");
         }
 
-        private async void translate(string lang, [Remainder] string text)
+        private async Task translate(string lang, [Remainder] string text)
         {
             string uri = host + path + lang;
             System.Object[] body = new System.Object[] { new { Text = text } };
@@ -75,7 +75,7 @@ namespace Meiyounaise.Core.Commands
         public async Task Deutsch([Remainder] string text)
         {
             getKey();
-            translate("&to=de", text);
+            await translate("&to=de", text);
             await ReplyAsync(jsontostring(translated, true));
         }
 
@@ -85,7 +85,7 @@ namespace Meiyounaise.Core.Commands
         {
             getKey();
             var message = await Context.Channel.GetMessagesAsync(2).Flatten();
-            translate("&to=de", message.Last().Content);
+            await translate("&to=de", message.Last().Content);
             await ReplyAsync(jsontostring(translated, true));
         }
         //TRANSLATE TO EN
@@ -93,7 +93,7 @@ namespace Meiyounaise.Core.Commands
         public async Task Englisch([Remainder] string text)
         {
             getKey();
-            translate("&to=en", text);
+            await translate("&to=en", text);
             await ReplyAsync(jsontostring(translated, false));
         }
         //TRANSLATE LAST MESSAGE TO EN
@@ -102,7 +102,7 @@ namespace Meiyounaise.Core.Commands
         {
             getKey();
             var message = await Context.Channel.GetMessagesAsync(2).Flatten();
-            translate("&to=de", message.Last().Content);
+            await translate("&to=de", message.Last().Content);
             await ReplyAsync(jsontostring(translated, false));
         }
     }
