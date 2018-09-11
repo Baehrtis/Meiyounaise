@@ -51,7 +51,6 @@ namespace Meiyounaise
         private async Task Client_Log(LogMessage Message)
         {
             Console.WriteLine($"{DateTime.Now} at {Message.Source}] {Message.Message}");
-
         }
 
         private async Task Client_Ready()

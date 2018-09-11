@@ -69,8 +69,7 @@ namespace Meiyounaise.Core.Commands
                 translated = result;
             }
         }
-
-
+        
         //TRANSLATE TO DE
         [Command("de", RunMode = RunMode.Async), Summary("Übersetzt shit zu deutsch")]
         public async Task Deutsch([Remainder] string text)
