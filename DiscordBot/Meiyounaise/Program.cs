@@ -25,7 +25,7 @@ namespace Meiyounaise
         //STARTING UP
         private async Task RunAsync()
         {   //Discord Client
-            m_Client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Debug });
+            m_Client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Info });
             //Command Service to link modules
             m_Commands = new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false, DefaultRunMode = RunMode.Async, LogLevel = LogSeverity.Debug });
             m_Services = InstallServices();
