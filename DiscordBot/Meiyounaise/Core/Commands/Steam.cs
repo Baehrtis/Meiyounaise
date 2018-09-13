@@ -26,6 +26,7 @@ namespace Meiyounaise.Core.Commands
         private Embed buildSteamEmbed(ulong id)
         {
             string curl = sInterface.GetCommunityProfileAsync(id).Result.CustomURL;
+            
             if (curl == "")
             {
                 curl = "Not set!";
@@ -53,6 +54,15 @@ namespace Meiyounaise.Core.Commands
             try
             {
                 await ReplyAsync("", false, buildSteamEmbed(id));
+                string lol = "";
+                var test = sInterface.GetCommunityProfileAsync(id).Result.MostPlayedGames;//sInterface.GetCommunityProfileAsync(id).Result.MostPlayedGames;
+                foreach (var VARIABLE in test)
+                {
+
+                    lol+= VARIABLE.Name+ " " + VARIABLE.HoursOnRecord +"\n";
+                }
+
+                await ReplyAsync(lol);
             }
             catch (Exception e)
             {
