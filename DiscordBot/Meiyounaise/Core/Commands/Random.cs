@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -10,9 +8,29 @@ namespace Meiyounaise.Core.Commands
 {
     public class Random : ModuleBase<SocketCommandContext>
     {
+        //DMAU
+        [Command("unnerum"), Summary("ok")]
+        public async Task AberUnneRumTask([Remainder]string input = "")
+        {
+            string input2 = input;
+            if (input == "")
+            {
+                var message = await Context.Channel.GetMessagesAsync(2).Flatten();
+                input2 = message.Last().Content;
+            }
+            string result = "***";
+            for (int i = 1; i <= input2.Length; i += 2)
+            {
+                input2 = input2.Insert(i, " ");
+            }
+            input2 = input2.ToUpper();
+            result += "D E I N E  M U T T E R  " + input2 + ",  A B E R   U N N E R U M" + "***";
+            await ReplyAsync(result);
+        }
+
         //PING
         [Command("ping"), Summary("Returns Latency")]
-        public async Task ping()
+        public async Task Ping()
         {
             var temp = await Context.Channel.SendMessageAsync("Ping...");
             EmbedBuilder embed = new EmbedBuilder()
@@ -34,8 +52,8 @@ namespace Meiyounaise.Core.Commands
         public async Task Avatar(string name)
         {
             var user = Context.Message.MentionedUsers.FirstOrDefault();
-            string url = user.GetAvatarUrl();
-            await ReplyAsync($"{user.Username}'s Avatar ist: {url.Replace("size=128", "size=1024")}");
+            string url = user?.GetAvatarUrl();
+            await ReplyAsync($"{user?.Username}'s Avatar ist: {url?.Replace("size=128", "size=1024")}");
         }
         //QUOTE
         [Command("quote"), Summary("Quote people via a message id")]
@@ -43,7 +61,7 @@ namespace Meiyounaise.Core.Commands
         {
             var toQuote = await Context.Channel.GetMessageAsync(id);
             string url = toQuote.Attachments.FirstOrDefault()?.Url;
-            EmbedBuilder Embed = new EmbedBuilder()
+            EmbedBuilder embed = new EmbedBuilder()
                 .WithDescription(toQuote.Content)
                 .WithColor(new Color(0x3C3175))
                 .WithTimestamp(toQuote.Timestamp)
@@ -67,14 +85,14 @@ namespace Meiyounaise.Core.Commands
 
             if (toQuote.Attachments.Count == 1)
             {
-                string type = url.Substring(url.Length - 3);
+                string type = url?.Substring(url.Length - 3);
                 if (type == "png" || type == "jpg" || type == "jpeg")
                 {
-                    Embed.WithImageUrl(toQuote.Attachments.FirstOrDefault().Url);
+                    embed.WithImageUrl(toQuote.Attachments.FirstOrDefault()?.Url);
                 }
                 else
                 {
-                    Embed.AddField("Attachment:", toQuote.Attachments.FirstOrDefault().Url);
+                    embed.AddField("Attachment:", toQuote.Attachments.FirstOrDefault()?.Url);
                 }
             }
 
@@ -88,7 +106,7 @@ namespace Meiyounaise.Core.Commands
             }
             finally
             {
-                await Context.Channel.SendMessageAsync("", false, Embed.Build());
+                await Context.Channel.SendMessageAsync("", false, embed.Build());
             }
         }
     }

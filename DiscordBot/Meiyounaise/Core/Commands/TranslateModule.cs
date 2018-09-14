@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Text;
 using System.Threading.Tasks;
 using Discord;
@@ -14,21 +12,22 @@ using Newtonsoft.Json;
 
 namespace Meiyounaise.Core.Commands
 {
+    [SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
     public class TranslateModule : ModuleBase<SocketCommandContext>
     {
         ///////////////////////////
         // NOTE: Replace this example key with a valid subscription key.
 
-        string key = "";
+        string _key = "";
         string host = "https://api.cognitive.microsofttranslator.com";
         string path = "/translate?api-version=3.0";
-        string translated = "";
-        void getKey()
+        string _translated = "";
+        void GetKey()
         {
-            using (var Stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\TranslateKey.txt"), FileMode.Open, FileAccess.Read))
-            using (var ReadToken = new StreamReader(Stream))
+            using (var stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\TranslateKey.txt"), FileMode.Open, FileAccess.Read))
+            using (var readToken = new StreamReader(stream))
             {
-                this.key = ReadToken.ReadToEnd();
+                _key = readToken.ReadToEnd();
             }
         }
 
@@ -48,10 +47,10 @@ namespace Meiyounaise.Core.Commands
             return input.Replace(@"\n", "\n");
         }
 
-        private async Task translate(string lang, [Remainder] string text)
+        private async Task Translate(string lang, [Remainder] string text)
         {
             string uri = host + path + lang;
-            System.Object[] body = new System.Object[] { new { Text = text } };
+            Object[] body = { new { Text = text } };
             var requestBody = JsonConvert.SerializeObject(body);
 
             using (var client = new HttpClient())
@@ -60,13 +59,13 @@ namespace Meiyounaise.Core.Commands
                 request.Method = HttpMethod.Post;
                 request.RequestUri = new Uri(uri);
                 request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-                request.Headers.Add("Ocp-Apim-Subscription-Key", key);
+                request.Headers.Add("Ocp-Apim-Subscription-Key", _key);
 
                 var response = await client.SendAsync(request);
                 var responseBody = await response.Content.ReadAsStringAsync();
                 var result = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(responseBody), Formatting.Indented);
-                Console.OutputEncoding = UnicodeEncoding.UTF8;
-                translated = result;
+                Console.OutputEncoding = Encoding.UTF8;
+                _translated = result;
             }
         }
         
@@ -74,36 +73,36 @@ namespace Meiyounaise.Core.Commands
         [Command("de", RunMode = RunMode.Async), Summary("Übersetzt shit zu deutsch")]
         public async Task Deutsch([Remainder] string text)
         {
-            getKey();
-            await translate("&to=de", text);
-            await ReplyAsync(jsontostring(translated, true));
+            GetKey();
+            await Translate("&to=de", text);
+            await ReplyAsync(jsontostring(_translated, true));
         }
 
         //TRANSLATE LAST MESSAGE TO DE
         [Command("de", RunMode = RunMode.Async), Summary("Übersetzt shit zu deutsch")]
         public async Task Deutsch2()
         {
-            getKey();
+            GetKey();
             var message = await Context.Channel.GetMessagesAsync(2).Flatten();
-            await translate("&to=de", message.Last().Content);
-            await ReplyAsync(jsontostring(translated, true));
+            await Translate("&to=de", message.Last().Content);
+            await ReplyAsync(jsontostring(_translated, true));
         }
         //TRANSLATE TO EN
         [Command("en", RunMode = RunMode.Async), Summary("Übersetzt shit zu deutsch")]
         public async Task Englisch([Remainder] string text)
         {
-            getKey();
-            await translate("&to=en", text);
-            await ReplyAsync(jsontostring(translated, false));
+            GetKey();
+            await Translate("&to=en", text);
+            await ReplyAsync(jsontostring(_translated, false));
         }
         //TRANSLATE LAST MESSAGE TO EN
         [Command("en", RunMode = RunMode.Async), Summary("Übersetzt shit zu deutsch")]
         public async Task Englisch2()
         {
-            getKey();
+            GetKey();
             var message = await Context.Channel.GetMessagesAsync(2).Flatten();
-            await translate("&to=de", message.Last().Content);
-            await ReplyAsync(jsontostring(translated, false));
+            await Translate("&to=de", message.Last().Content);
+            await ReplyAsync(jsontostring(_translated, false));
         }
     }
 }

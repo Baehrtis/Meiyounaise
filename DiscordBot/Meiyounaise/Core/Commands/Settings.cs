@@ -1,15 +1,34 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Net;
+using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using System.Net.Http;
 
 namespace Meiyounaise.Core.Commands
 {
     public class Settings : ModuleBase<SocketCommandContext>
     {
+        public static async Task DownloadAsync(Uri requestUri, string filename)
+        {
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            HttpClientHandler handler = new HttpClientHandler();
+            using (var httpClient = new HttpClient(handler, false))
+            {
+                using (var request = new HttpRequestMessage(HttpMethod.Get, requestUri))
+                {
+                    using (
+                        Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),
+                        stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
+                    {
+                        await contentStream.CopyToAsync(stream);
+                    }
+                }
+            }
+        }
         //STATUS
         [Command("status"), Summary("Changes the bots Game")]
         public async Task Status([Remainder]string ns)
@@ -27,31 +46,48 @@ namespace Meiyounaise.Core.Commands
         }
         //BOT ICON
         [Command("icon", RunMode = RunMode.Async), Summary("Changes the Bots avatar. Bot Owner only")]
-        public async Task Icon()
+        public async Task Icon(string url = "")
         {
-            if (Context.Message.Author.Id == 137234090309976064)
+            string path = (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\icon.png");
+            try
             {
-                if (Context.Message.Attachments.Count == 0)
+                string durl;
+                if (Context.Message.Attachments.Count != 0)//CURRENT MESSAGE HAS ATTACHMENT
                 {
-                    await ReplyAsync("Keine Bild angehängt!");
-                    return;
+                    durl = Context.Message.Attachments.FirstOrDefault()?.Url;
                 }
-                string localFilename = @"E:\Programming\DiscordBot\Meiyounaise\Data\icon.png";
-                using (WebClient client = new WebClient())
+                else//CURRENT MESSAGE DOES NOT HAVE ATTACHMENT
                 {
-                    client.DownloadFile(Context.Message.Attachments.FirstOrDefault().Url, localFilename);
+                    if (url != "")//IMAGE URL PROVIDED
+                    {
+                        durl = url;
+                    }
+                    else//NO IMAGE URL PROVIDED
+                    {
+                        //GET LAST MESSAGE var message = await Context.Channel.GetMessagesAsync(2).Flatten();
+                        var lm = await Context.Channel.GetMessagesAsync(2).Flatten();
+                        var message = lm.Last();
+                        if (message.Attachments.Count != 0)
+                        {
+                            durl = message.Attachments.FirstOrDefault()?.Url;
+                        }
+                        else
+                        {
+                            durl = message.Content;
+                        }
+                    }
                 }
-               
-                var fileStream = new FileStream(@"E:\Programming\DiscordBot\Meiyounaise\Data\icon.png",
-                    FileMode.Open);
-                var image = new Image(fileStream);
-                fileStream.Position = 0;
-
-                await (Context.Client.CurrentUser).ModifyAsync(x => x.Avatar = image);
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                await DownloadAsync(new Uri(durl), path);
+                var avatar = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\icon.png"), FileMode.Open);
+                await (Context.Client.CurrentUser).ModifyAsync(x => x.Avatar = new Image(avatar));
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
             }
-            else
+            catch (Exception e)
             {
-                await ReplyAsync("Only for the Bot Owner, sorry!");
+                await ReplyAsync(e.Message);
             }
         }
     }

@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.WebSocket;
 using Discord.Commands;
-using Meiyounaise.Core.Commands;
 using Microsoft.Extensions.DependencyInjection;
 using Random = System.Random;
 
@@ -14,26 +13,27 @@ namespace Meiyounaise
     class Program
     {
         //Private Variables
-        private DiscordSocketClient m_Client;
-        private CommandService m_Commands;
-        private IServiceProvider m_Services;
+        private DiscordSocketClient _mClient;
+        private CommandService _mCommands;
+        // ReSharper disable once NotAccessedField.Local
+        private IServiceProvider _mServices;
 
         //MAIN
-        static void Main(string[] args)
+        static void Main()
             => new Program().RunAsync().GetAwaiter().GetResult();
 
         //STARTING UP
         private async Task RunAsync()
         {   //Discord Client
-            m_Client = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Info });
+            _mClient = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Info });
             //Command Service to link modules
-            m_Commands = new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false, DefaultRunMode = RunMode.Async, LogLevel = LogSeverity.Debug });
-            m_Services = InstallServices();
-            string Token = "";
-            using (var Stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\Token.txt"), FileMode.Open, FileAccess.Read))
-            using (var ReadToken = new StreamReader(Stream)) { Token = ReadToken.ReadToEnd(); }
-            await m_Client.LoginAsync(TokenType.Bot, Token);
-            await m_Client.StartAsync();
+            _mCommands = new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false, DefaultRunMode = RunMode.Async, LogLevel = LogSeverity.Debug });
+            _mServices = InstallServices();
+            string token;
+            using (var stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\Token.txt"), FileMode.Open, FileAccess.Read))
+            using (var readToken = new StreamReader(stream)) { token = readToken.ReadToEnd(); }
+            await _mClient.LoginAsync(TokenType.Bot, token);
+            await _mClient.StartAsync();
             await InstallCommands();
 
             await Task.Delay(-1);
@@ -46,31 +46,31 @@ namespace Meiyounaise
         {
             Random ran = new Random();
             string[] status = { "stndbild😡", "Kack Drecks Wissenschaftliche Arbeit Hurensohn", "Fuck auf die Hater, Hans ist da" };
-            await m_Client.SetGameAsync(status[ran.Next(status.Length)], "https://twitch.tv/m3iy0u", StreamType.NotStreaming);
+            await _mClient.SetGameAsync(status[ran.Next(status.Length)], "https://twitch.tv/m3iy0u");
         }
 
-        private async Task MessageReceived(SocketMessage MessageParam)
+        private async Task MessageReceived(SocketMessage messageParam)
         {
-            var Message = MessageParam as SocketUserMessage;
-            var Context = new SocketCommandContext(m_Client, Message);
+            var message = messageParam as SocketUserMessage;
+            var context = new SocketCommandContext(_mClient, message);
 
-            if (Context.Message == null || Context.Message.Content == "") return;
-            if (Context.User.IsBot) return;
+            if (context.Message == null || context.Message.Content == "") return;
+            if (context.User.IsBot) return;
 
-            int ArgPos = 0;
-            if (!(Message.HasStringPrefix("&", ref ArgPos) || Message.HasMentionPrefix(m_Client.CurrentUser, ref ArgPos))) return;
+            int argPos = 0;
+            if (!(message.HasStringPrefix("&", ref argPos) || message.HasMentionPrefix(_mClient.CurrentUser, ref argPos))) return;
 
-            var Result = await m_Commands.ExecuteAsync(Context, ArgPos);
-            if (!Result.IsSuccess)
+            var result = await _mCommands.ExecuteAsync(context, argPos);
+            if (!result.IsSuccess)
             {
-                Console.WriteLine($"{DateTime.Now} at Commands] Something went wrong with executing a command. Text: {Context.Message.Content} | Error: {Result.ErrorReason}");
-                await Context.Channel.SendMessageAsync($"Something went wrong. Error: `{Result.ErrorReason}`");
+                Console.WriteLine($"{DateTime.Now} at Commands] Something went wrong with executing a command. Text: {context.Message.Content} | Error: {result.ErrorReason}");
+                await context.Channel.SendMessageAsync($"Something went wrong. Error: `{result.ErrorReason}`");
             }
         }
         
         private Task Disconnected(Exception arg)
         {
-            Console.WriteLine("Disconnected", arg);
+            Console.WriteLine("Disconnected");
             return Task.CompletedTask;
         }
 
@@ -91,18 +91,18 @@ namespace Meiyounaise
         private async Task InstallCommands()
         {
             // Before we install commands, we should check if everything was set up properly. Check if logged in.
-            if (m_Client.LoginState != LoginState.LoggedIn) return;
+            if (_mClient.LoginState != LoginState.LoggedIn) return;
 
             // Hook the MessageReceived Event into our Command Handler
-            m_Client.MessageReceived += MessageReceived;
+            _mClient.MessageReceived += MessageReceived;
 
             // Add tasks to send Messages
-            m_Client.Ready += Ready;
-            m_Client.Disconnected += Disconnected;
-            m_Client.Log += Log;
+            _mClient.Ready += Ready;
+            _mClient.Disconnected += Disconnected;
+            _mClient.Log += Log;
 
             // Discover all of the commands in this assembly and load them.
-            await m_Commands.AddModulesAsync(Assembly.GetEntryAssembly());
+            await _mCommands.AddModulesAsync(Assembly.GetEntryAssembly());
         }
     }
 }

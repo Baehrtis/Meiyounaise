@@ -1,21 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using Discord.Commands;
-using Microsoft.VisualBasic;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
 namespace Meiyounaise.Core.Commands
 {
+    [SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
     public class Recognition : ModuleBase<SocketCommandContext>
     {
         static byte[] GetImageAsByteArray(string imageFilePath)
@@ -45,15 +40,15 @@ namespace Meiyounaise.Core.Commands
         [Command("emotion")]
         public async Task Emotion(string eurl = "")
         {
-            string key = "";
-            using (var Stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\EmotionKey.txt"), FileMode.Open, FileAccess.Read))
-            using (var ReadToken = new StreamReader(Stream))
+            string key;
+            using (var stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\EmotionKey.txt"), FileMode.Open, FileAccess.Read))
+            using (var readToken = new StreamReader(stream))
             {
-                key = ReadToken.ReadToEnd();
+                key = readToken.ReadToEnd();
             }
 
-            System.GC.Collect();
-            System.GC.WaitForPendingFinalizers();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
             bool cont = true;
             string imageFilePath = (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\emotion.png");
             try
@@ -96,9 +91,8 @@ namespace Meiyounaise.Core.Commands
                     // Second token is all emotion scores.
                     JToken scoresToken = rootToken.Last;
                     // Show all face rectangle dimensions
-                    JEnumerable<JToken> faceRectangleSizeList = faceRectangleToken.First.Children();
-                    JEnumerable<JToken> scoreList = scoresToken.First.Children();
-
+                    JEnumerable<JToken> unused = faceRectangleToken.First.Children();
+                    JEnumerable<JToken> unused2 = scoresToken.First.Children();
                     string result = scoresToken.ToString();
                     result = result.Substring(result.IndexOf("\"emotion\": {") + 12);
                     result.Remove(result.IndexOf("  },"));
@@ -116,9 +110,9 @@ namespace Meiyounaise.Core.Commands
                         "This means that either the API didn't recognize a face, or shit itself in other ways. Try a different picture");
                 }
             }
-            System.GC.Collect();
-            System.GC.WaitForPendingFinalizers();
-            System.IO.File.Delete((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1",
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            File.Delete((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1",
                 @"Data\emotion.png"));
         }
     }
