@@ -29,8 +29,11 @@ namespace Meiyounaise.Core.Commands
                 .AddField("&en (Text to translate)", "Translates your text to English, if you provide no text, it translates the last message in the channel")
                 .AddField("&icon [Attach Image to message]", "Changes the Bots Avatar to whatever you attached to your message")
                 .AddField("&nickname [Name]", "Sets the Nickname of the Bot to Name")
+                .AddField("&ping", "Returns the Latencies of the Bot")
                 .AddField("&qote [Message ID]", "Quote somebody's message via the message ID, deletes your original message")
-                .AddField("&status [Game to play]", "Sets the Bot's Game (Playing X)");
+                .AddField("&status [Game to play]", "Sets the Bot's Game (Playing X)")
+                .AddField("&steam [steamID64/Custom URL]", "Get Information about the provided Steam account");
+                
             await Context.Channel.SendMessageAsync("",false,Embed.Build());
         }
     }
