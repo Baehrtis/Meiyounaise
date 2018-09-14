@@ -96,7 +96,6 @@ namespace Meiyounaise.Core.Commands
                 return;
             }
             await ReplyAsync("", false, buildSteamEmbed(id));
-
         }
 
         [Command("steam")]

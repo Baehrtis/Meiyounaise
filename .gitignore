@@ -219,5 +219,6 @@ project.lock.json
 Token.txt
 EmotionKey.txt
 TranslateKey.txt
+SteamKey.txt
 *.sln
-DiscordBot/Meiyounaise/Data/SteamKey\.txt
+

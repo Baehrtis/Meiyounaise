@@ -10,7 +10,6 @@ namespace Meiyounaise.Core.Commands
 {
     public class Random : ModuleBase<SocketCommandContext>
     {
-
         //PING
         [Command("ping"), Summary("Returns Latency")]
         public async Task ping()

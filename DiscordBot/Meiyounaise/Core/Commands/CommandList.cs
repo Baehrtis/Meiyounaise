@@ -19,7 +19,7 @@ namespace Meiyounaise.Core.Commands
                     author
                         .WithName("Meiyounaise")
                         .WithIconUrl(botavatar);
-                }) //Avatar,Bilder,Clap,Emotion,Icon,Nickname,Quote,Status,Translate
+                }) //Avatar,Bilder,Clap,Emotion,Icon,Nickname,Ping,Quote,Status,Steam,Translate
                 .WithDescription("**Commands for the Bot. [] are necessary, () are optional**")
                 .AddField("&avatar [@User]", "Gets the provided users Avatar")
                 .AddField("Pictures","&bastard, &blod")
