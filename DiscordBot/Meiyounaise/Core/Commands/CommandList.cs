@@ -24,7 +24,7 @@ namespace Meiyounaise.Core.Commands
                 .AddField("&de (Text to Translate)", "Translates your text to German, if you provide no text, it translates the last message in the channel")
                 .AddField("&emotion [Image URL]", "Reads the Emotions of a face")
                 .AddField("&en (Text to translate)", "Translates your text to English, if you provide no text, it translates the last message in the channel")
-                .AddField("&icon [Attach Image to message]", "Changes the Bots Avatar to whatever you attached to your message")
+                .AddField("&icon (Image URL/Attached Image)", "Changes the Bots Avatar to the provided URL/Image. If you provide none, it look at the last message in the channel")
                 .AddField("&nickname [Name]", "Sets the Nickname of the Bot to Name")
                 .AddField("&ping", "Returns the Latencies of the Bot")
                 .AddField("&quote [Message ID]", "Quote somebody's message via the message ID, deletes your original message")
