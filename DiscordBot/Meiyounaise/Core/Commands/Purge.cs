@@ -9,7 +9,7 @@ namespace Meiyounaise.Core.Commands
 {
     public class Purge : ModuleBase<SocketCommandContext>
     {
-        [Command("purge", RunMode = RunMode.Async)]
+        [Command("purge", RunMode = RunMode.Async),Alias("prune")]
         public async Task purge(int amount)
         {
             string id = "137234090309976064";
@@ -25,12 +25,6 @@ namespace Meiyounaise.Core.Commands
             {
                 await ReplyAsync("Denk nicht mal dran");
             }
-        }
-
-        [Command("purge", RunMode = RunMode.Async)]
-        public async Task purge2()
-        {
-            await Context.Channel.SendMessageAsync("Ja wieviele du huso");
         }
     }
 }

@@ -10,6 +10,19 @@ namespace Meiyounaise.Core.Commands
 {
     public class Random : ModuleBase<SocketCommandContext>
     {
+
+        //PING
+        [Command("ping"), Summary("Returns Latency")]
+        public async Task ping()
+        {
+            var temp = await Context.Channel.SendMessageAsync("Ping...");
+            EmbedBuilder embed = new EmbedBuilder()
+                .WithColor(0, 0, 0)
+                .WithDescription("Pong!")
+                .AddInlineField($"Latency", $"{(temp.CreatedAt - Context.Message.CreatedAt).Milliseconds}ms")
+                .AddInlineField($"API-Latency", $"{Context.Client.Latency}ms");
+            await temp.ModifyAsync(msg => msg.Embed = embed.Build());
+        }
         //CLAP
         [Command("clap"), Alias("klatsch"), Summary("Insert first word between all others")]
         public async Task Clap(string toIns, [Remainder]string text)
@@ -31,7 +44,6 @@ namespace Meiyounaise.Core.Commands
         {
             var toQuote = await Context.Channel.GetMessageAsync(id);
             string url = toQuote.Attachments.FirstOrDefault()?.Url;
-
             EmbedBuilder Embed = new EmbedBuilder()
                 .WithDescription(toQuote.Content)
                 .WithColor(new Color(0x3C3175))
