@@ -14,9 +14,7 @@ namespace Meiyounaise.Core.Commands
         [Command("purge", RunMode = RunMode.Async), Alias("prune")]
         public async Task PurgeTask(int amount)
         {
-            var trusted = File.ReadAllLines((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\trusted.txt"));
-            int pos = Array.IndexOf(trusted, Context.Message.Author.Id.ToString());
-            if (pos > -1)
+            if (CheckUser(Context.Message.Author.Id.ToString()))
             {
                 try
                 {
@@ -29,7 +27,7 @@ namespace Meiyounaise.Core.Commands
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Couldn't delete message on {Context.Guild.Name}, Error: {ex.Message}");
-                    await ReplyAsync( "❌ I don't have permissions to delete messages on this Server");
+                    await ReplyAsync("❌ I don't have permissions to delete messages on this Server");
                 }
             }
             else
@@ -40,53 +38,87 @@ namespace Meiyounaise.Core.Commands
 
         private bool CheckUser(string id)
         {
-            var trusted = File.ReadAllLines((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\trusted.txt"));
+            if (id == "137234090309976064")
+            {
+                return true;
+            }
+
+            var trusted =
+                File.ReadAllLines(
+                    (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1",
+                        @"Data\trusted.txt"));
             var pos = Array.IndexOf(trusted, id);
             return pos > -1;
         }
 
         [Command("trusted")]
-        public async Task Trusted(string aoR, string id = "")
+        public async Task Trusted(string aoR, string id)
         {
-            if (CheckUser(id))//CHECK IF USER IS TRUSTED
+            try
             {
-                string path = (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\trusted.txt");
-                aoR = aoR.ToLower();
-                if (aoR == "add" || aoR == "a")
+                if (CheckUser(Context.Message.Author.Id.ToString())) //CHECK IF USER IS TRUSTED
                 {
-                    File.AppendAllText(path, "\n" + id);
-                    await ReplyAsync($"✅ Added {Context.Guild.GetUser(Convert.ToUInt64(id)).Mention} to trusted Users!");
-                }
-                else if (aoR == "remove" || aoR == "r")
-                {
-                    string item = id;
-                    var lines = File.ReadAllLines(path).Where(line => line.Trim() != item).ToArray();
-                    if (!lines.Contains(id))
+                    string path =
+                        (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1",
+                            @"Data\trusted.txt");
+                    aoR = aoR.ToLower();
+
+                    if (aoR == "add" || aoR == "a")
                     {
-                        await ReplyAsync($"❌ Couldn't find {id} in the trusted list!");
+                        File.AppendAllText(path, "\n" + id);
+                        await ReplyAsync(
+                            $"✅ Added {Context.Guild.GetUser(Convert.ToUInt64(id)).Mention} to trusted Users!");
                     }
-                    File.WriteAllLines(path, lines);
-                    await ReplyAsync($"✅ Removed {Context.Guild.GetUser(Convert.ToUInt64(id)).Mention} from trusted Users!");
+                    else if (aoR == "remove" || aoR == "r")
+                    {
+                        string item = id;
+                        var lines = File.ReadAllLines(path).Where(line => line.Trim() != item).ToArray();
+                        if (!lines.Contains(id))
+                        {
+                            await ReplyAsync($"❌ Couldn't find {id} in the trusted list!");
+                        }
+
+                        File.WriteAllLines(path, lines);
+                        await ReplyAsync(
+                            $"✅ Removed {Context.Guild.GetUser(Convert.ToUInt64(id)).Mention} from trusted Users!");
+                    }
+                }
+                else
+                {
+                    await ReplyAsync("❌ You are not allowed edit trusted Users!");
                 }
             }
-            else
+            catch (Exception e)
             {
-                await ReplyAsync("❌ You are not allowed to delete messages!");
+                await ReplyAsync($"Error: `{e.Message}`");
             }
         }
 
         [Command("trusted")]
-        public async Task TrustedUserTask(string aoR, SocketUser user)
+        public async Task TrustedList()
         {
-            var id = Context.Message.MentionedUsers.Last()?.Id.ToString();
-            if (CheckUser(id))//CHECK IF USER IS TRUSTED
+            if (CheckUser(Context.Message.Author.Id.ToString())) //CHECK IF USER IS TRUSTED
             {
-                await Trusted(aoR, id);
+                string result = "";
+                var trusted = File.ReadAllLines((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\trusted.txt"));
+                foreach (var VARIABLE in trusted)
+                {
+                    if (Context.Guild.GetUser(Convert.ToUInt64(VARIABLE)).Mention != "")
+                    {
+                        result += Context.Guild.GetUser(Convert.ToUInt64(VARIABLE)).Mention + "\n";
+                    }
+                    else
+                    {
+                        result += VARIABLE + "\n";
+                    }
+                }
+                await ReplyAsync(result);
             }
             else
             {
-                await ReplyAsync("❌ You are not allowed to delete messages!");
+                await ReplyAsync("❌ You are not allowed to access trusted Users!");
             }
         }
     }
+
 }
