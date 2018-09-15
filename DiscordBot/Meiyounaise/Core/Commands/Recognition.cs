@@ -29,7 +29,8 @@ namespace Meiyounaise.Core.Commands
                 {
                     using (
                         Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),
-                        stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
+                        stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, 4096,
+                            true))
                     {
                         await contentStream.CopyToAsync(stream);
                     }
@@ -41,7 +42,10 @@ namespace Meiyounaise.Core.Commands
         public async Task Emotion(string eurl = "")
         {
             string key;
-            using (var stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\EmotionKey.txt"), FileMode.Open, FileAccess.Read))
+            using (var stream =
+                new FileStream(
+                    (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1",
+                        @"Data\EmotionKey.txt"), FileMode.Open, FileAccess.Read))
             using (var readToken = new StreamReader(stream))
             {
                 key = readToken.ReadToEnd();
@@ -50,7 +54,9 @@ namespace Meiyounaise.Core.Commands
             GC.Collect();
             GC.WaitForPendingFinalizers();
             bool cont = true;
-            string imageFilePath = (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\emotion.png");
+            string imageFilePath =
+                (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1",
+                    @"Data\emotion.png");
             try
             {
                 await DownloadAsync(new Uri(eurl), imageFilePath);
@@ -60,6 +66,7 @@ namespace Meiyounaise.Core.Commands
                 await Context.Channel.SendMessageAsync($"Error downloading picture: `{e.Message}`");
                 cont = false;
             }
+
             if (cont)
             {
                 try
@@ -67,8 +74,9 @@ namespace Meiyounaise.Core.Commands
                     GC.Collect();
                     GC.WaitForPendingFinalizers();
                     var client = new HttpClient();
-                    client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", key); 
-                    var uri = "https://westeurope.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories,blur,exposure,noise";
+                    client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", key);
+                    var uri =
+                        "https://westeurope.api.cognitive.microsoft.com/face/v1.0/detect?returnFaceId=true&returnFaceLandmarks=false&returnFaceAttributes=age,gender,headPose,smile,facialHair,glasses,emotion,hair,makeup,occlusion,accessories,blur,exposure,noise";
 
                     HttpResponseMessage response;
                     string responseContent;
@@ -110,10 +118,13 @@ namespace Meiyounaise.Core.Commands
                         "This means that either the API didn't recognize a face, or shit itself in other ways. Try a different picture");
                 }
             }
+
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            File.Delete((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1",
+            File.Delete((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(
+                @"bin\Debug\netcoreapp2.1",
                 @"Data\emotion.png"));
         }
     }
 }
+

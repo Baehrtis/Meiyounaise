@@ -54,7 +54,6 @@ namespace Meiyounaise.Core.Commands
             return baseEmbed;
         }
 
-
         private Embed BuildPublicEmbed(ulong id)
         {
             EmbedBuilder publicEmbed = BuildBaseEmbed(id);
@@ -63,10 +62,10 @@ namespace Meiyounaise.Core.Commands
             {
                 curl = "Not set!";
             }
-                publicEmbed
-                .AddInlineField("Profile created on", _sInterface.GetPlayerSummaryAsync(id).Result.Data.AccountCreatedDate.ToString())
-                .AddInlineField("steamID64", id)
-                .AddInlineField("Custom URL", curl);
+            publicEmbed
+            .AddInlineField("Profile created on", _sInterface.GetPlayerSummaryAsync(id).Result.Data.AccountCreatedDate.ToString())
+            .AddInlineField("steamID64", id)
+            .AddInlineField("Custom URL", curl);
             try
             {
                 var recentGames = _sInterface.GetCommunityProfileAsync(id).Result.MostPlayedGames;
@@ -78,13 +77,12 @@ namespace Meiyounaise.Core.Commands
             }
             catch (Exception)
             {
-                publicEmbed.AddInlineField("Games","🚫 I couldn't access the games on this account due to their Privacy Settings!");
+                publicEmbed.AddInlineField("Games", "🚫 I couldn't access the games on this account due to their Privacy Settings!");
             }
             return publicEmbed.Build();
         }
 
-
-        private Embed BuildPrivateEmbed(ulong id,string curl="")
+        private Embed BuildPrivateEmbed(ulong id, string curl = "")
         {
             EmbedBuilder privateEmbed = BuildBaseEmbed(id)
                 .AddInlineField("Profile created on", "🚫Private Profile")
@@ -93,8 +91,6 @@ namespace Meiyounaise.Core.Commands
             privateEmbed.AddInlineField("Games", "🚫 I couldn't access the games on this account due to their Privacy Settings!");
             return privateEmbed.Build();
         }
-
-
 
         [Command("steam")]
         public async Task SteamTask(string idname)
@@ -120,7 +116,7 @@ namespace Meiyounaise.Core.Commands
 
             if (_sInterface.GetCommunityProfileAsync(id).Result.VisibilityState.ToString() == "1")//CHECK IF PROFILE IS PRIVATE
             {
-                await ReplyAsync("", false, BuildPrivateEmbed(id,idname));
+                await ReplyAsync("", false, BuildPrivateEmbed(id, idname));
                 return;
             }
             await ReplyAsync("", false, BuildPublicEmbed(id));

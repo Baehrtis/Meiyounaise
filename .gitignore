@@ -221,4 +221,5 @@ EmotionKey.txt
 TranslateKey.txt
 SteamKey.txt
 *.sln
-
+trusted.txt
+icon.png

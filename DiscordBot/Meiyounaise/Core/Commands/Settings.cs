@@ -48,7 +48,9 @@ namespace Meiyounaise.Core.Commands
         [Command("icon", RunMode = RunMode.Async), Summary("Changes the Bots avatar. Bot Owner only")]
         public async Task Icon(string url = "")
         {
-            string path = (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\icon.png");
+            var lm = await Context.Channel.GetMessagesAsync(2).Flatten();
+            var message = lm.Last();//GET LAST MESSAGE
+            var path = (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\icon.png");
             try
             {
                 string durl;
@@ -64,9 +66,6 @@ namespace Meiyounaise.Core.Commands
                     }
                     else//NO IMAGE URL PROVIDED
                     {
-                        //GET LAST MESSAGE var message = await Context.Channel.GetMessagesAsync(2).Flatten();
-                        var lm = await Context.Channel.GetMessagesAsync(2).Flatten();
-                        var message = lm.Last();
                         if (message.Attachments.Count != 0)
                         {
                             durl = message.Attachments.FirstOrDefault()?.Url;
@@ -81,7 +80,18 @@ namespace Meiyounaise.Core.Commands
                 GC.WaitForPendingFinalizers();
                 await DownloadAsync(new Uri(durl), path);
                 var avatar = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\icon.png"), FileMode.Open);
-                await (Context.Client.CurrentUser).ModifyAsync(x => x.Avatar = new Image(avatar));
+                try
+                {
+                    await (Context.Client.CurrentUser).ModifyAsync(x => x.Avatar = new Image(avatar));
+                    var reactTo = lm.FirstOrDefault() as IUserMessage;
+                    await reactTo.AddReactionAsync(new Emoji("✅"));
+                }
+                catch (Exception e)
+                {
+                    await ReplyAsync(e.Message);
+                    throw;
+                }
+               
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }

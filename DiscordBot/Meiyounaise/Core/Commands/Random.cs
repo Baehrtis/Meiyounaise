@@ -18,16 +18,22 @@ namespace Meiyounaise.Core.Commands
                 var message = await Context.Channel.GetMessagesAsync(2).Flatten();
                 input2 = message.Last().Content;
             }
-            string result = "***";
+            string result = "**";
             for (int i = 1; i <= input2.Length; i += 2)
             {
                 input2 = input2.Insert(i, " ");
             }
             input2 = input2.ToUpper();
-            result += "D E I N E  M U T T E R  " + input2 + ",  A B E R   U N N E R U M" + "***";
+            result += "D E I N E  M U T T E R  " + input2 + ",  A B E R   U N N E R U M" + "**";
             await ReplyAsync(result);
         }
-
+        //EMOTE
+        [Command("e")]
+        public async Task Emote(string input)
+        {
+            var emote = Discord.Emote.Parse(input);
+            await ReplyAsync(emote.Url);
+        }
         //PING
         [Command("ping"), Summary("Returns Latency")]
         public async Task Ping()
@@ -48,12 +54,12 @@ namespace Meiyounaise.Core.Commands
             await ReplyAsync(result);
         }
         //AVATAR
-        [Command("avatar"), Summary("mine now")]
+        [Command("avatar"), Summary("Show a users avatar")]
         public async Task Avatar(string name)
         {
             var user = Context.Message.MentionedUsers.FirstOrDefault();
             string url = user?.GetAvatarUrl();
-            await ReplyAsync($"{user?.Username}'s Avatar ist: {url?.Replace("size=128", "size=1024")}");
+            await ReplyAsync($"{user?.Username}'s Avatar is: {url?.Replace("size=128", "size=1024")}");
         }
         //QUOTE
         [Command("quote"), Summary("Quote people via a message id")]
@@ -95,7 +101,6 @@ namespace Meiyounaise.Core.Commands
                     embed.AddField("Attachment:", toQuote.Attachments.FirstOrDefault()?.Url);
                 }
             }
-
             try
             {
                 await Context.Message.DeleteAsync();
@@ -109,5 +114,14 @@ namespace Meiyounaise.Core.Commands
                 await Context.Channel.SendMessageAsync("", false, embed.Build());
             }
         }
+        //REGIONAL INDICATOR
+        [Command("ri")]
+        public async Task RegionalIndicator([Remainder]string input)
+        {
+            string result = input.ToLower();
+            result = result.Replace("a", "🇦 ").Replace("b", "🇧 ").Replace("c", "🇨 ").Replace("d", "🇩 ").Replace("e", "🇪 ").Replace("f", "🇫 ").Replace("g", "🇬 ").Replace("h", "🇭 ").Replace("i", "🇮 ").Replace("j", "🇯 ").Replace("k", "🇰 ").Replace("l", "🇱 ").Replace("m", "🇲 ").Replace("n", "🇳 ").Replace("o", "🇴 ").Replace("p", "🇵 ").Replace("q", "🇶 ").Replace("r", "🇷 ").Replace("s", "🇸 ").Replace("t", "🇹 ").Replace("u", "🇺 ").Replace("v", "🇻 ").Replace("w", "🇼 ").Replace("x", "🇽 ").Replace("y", "🇾 ").Replace("z", "🇿 ");
+            await ReplyAsync(result);
+        }
     }
+
 }

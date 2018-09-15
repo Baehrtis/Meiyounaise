@@ -15,9 +15,6 @@ namespace Meiyounaise.Core.Commands
     [SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
     public class TranslateModule : ModuleBase<SocketCommandContext>
     {
-        ///////////////////////////
-        // NOTE: Replace this example key with a valid subscription key.
-
         string _key = "";
         string host = "https://api.cognitive.microsofttranslator.com";
         string path = "/translate?api-version=3.0";
