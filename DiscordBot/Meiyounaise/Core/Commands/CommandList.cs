@@ -28,6 +28,7 @@ namespace Meiyounaise.Core.Commands
                 .AddField("&en (Text to translate)", "Translates your text to English, if you provide no text, it translates the last message in the channel")
                 .AddField("&faceapp | &fa", "Shows the available FaceApp Filters and how to use them")
                 .AddField("&icon (Image URL/Attached Image)", "Changes the Bots Avatar to the provided URL/Image. If you provide none, it look at the last message in the channel")
+                .AddField("&lyrics [\"Artist\"] [Song name]","Gets the Lyrics to the provided song. If the Artist's name is more than one word, use \"\" around it. Yes, you need both Artist AND Songname")
                 .AddField("&nickname [Name]", "Sets the Nickname of the Bot to Name")
                 .AddField("&ping", "Returns the Latencies of the Bot")
                 .AddField("&quote [Message ID]", "Quote somebody's message via the message ID, deletes your original message")

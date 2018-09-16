@@ -49,7 +49,7 @@ namespace Meiyounaise.Core.Commands
         public async Task Icon(string url = "")
         {
             var lm = await Context.Channel.GetMessagesAsync(2).Flatten();
-            var message = lm.Last();//GET LAST MESSAGE
+            var message = lm.Last(); //GET LAST MESSAGE
             var path = (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\icon.png");
             try
             {

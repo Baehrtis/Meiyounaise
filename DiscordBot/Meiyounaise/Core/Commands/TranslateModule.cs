@@ -40,7 +40,6 @@ namespace Meiyounaise.Core.Commands
             {
                 input = input.Substring(0, input.IndexOf(",\r\n        \"to\": \"en\"") - 1);
             }
-
             return input.Replace(@"\n", "\n");
         }
 
@@ -65,7 +64,7 @@ namespace Meiyounaise.Core.Commands
                 _translated = result;
             }
         }
-        
+
         //TRANSLATE TO DE
         [Command("de", RunMode = RunMode.Async), Summary("Übersetzt shit zu deutsch")]
         public async Task Deutsch([Remainder] string text)

@@ -120,5 +120,4 @@ namespace Meiyounaise.Core.Commands
             }
         }
     }
-
 }

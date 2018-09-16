@@ -16,7 +16,7 @@ namespace Meiyounaise.Core.Commands
         {
             FaceAppClient faceAppClient = new FaceAppClient(new HttpClient());
             var lm = await Context.Channel.GetMessagesAsync(2).Flatten();
-            var message = lm.Last();//GET LAST MESSAGE
+            var message = lm.Last(); //GET LAST MESSAGE
             string durl;
             if (Context.Message.Attachments.Count != 0)//CURRENT MESSAGE HAS ATTACHMENT
             {
@@ -61,12 +61,12 @@ namespace Meiyounaise.Core.Commands
                 catch (FaceException e)
                 {
                     await ReplyAsync("❌ " + e.Message);
-                    await ReplyAsync( "This either means that the API didn't recognize a face, or that the Bot is being rate limited");
+                    await ReplyAsync("This either means that the API didn't recognize a face, or that the Bot is being rate limited");
                 }
             }
         }
 
-        [Command("faceapp"),Alias("fa")]
+        [Command("faceapp"), Alias("fa")]
         public async Task FaceAppH()
         {
             string result = "**Available Filters:**\nOld, Smile, Smile_2, Young, Hot, Female, Female_2, Pan, Male, Glasses, Hollywood, Goatee, Impression, Heisenberg, Hitman,  Bangs, Wave, Makeup, Mustache, Lion, Hipster";

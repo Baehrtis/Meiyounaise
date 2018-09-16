@@ -123,5 +123,4 @@ namespace Meiyounaise.Core.Commands
             await ReplyAsync(result);
         }
     }
-
 }
