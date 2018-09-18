@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using SteamWebAPI2.Interfaces;
+using SteamStoreQuery;
 
 namespace Meiyounaise.Core.Commands
 {
@@ -133,6 +134,77 @@ namespace Meiyounaise.Core.Commands
                 return;
             }
             await ReplyAsync("", false, BuildPublicEmbed(id));
+        }
+
+        [Command("game"),Alias("sg","g")]
+        public async Task Game([Remainder]string name)
+        {
+            GetKey();
+            string price = "F2P";
+            var result = Query.Search(name);
+            if (result.Count<1)
+            {
+                await ReplyAsync("❌ I found no games using this search query!");
+                return;
+            }
+
+            if (result[0].PriceUSD!=null)
+            {
+                price = result[0].PriceUSD.ToString()+"$";
+            }
+
+            var appid = result[0].AppId;
+            var store = new SteamStore();
+            var game = store.GetStoreAppDetailsAsync(Convert.ToUInt32(result[0].AppId)).Result;
+
+            if (game.ReleaseDate.ComingSoon && price=="F2P")
+            {
+                price = "Not yet available";
+            }
+            var userStats = new SteamUserStats(_key);
+            var playerCount = userStats.GetNumberOfCurrentPlayersForGameAsync(Convert.ToUInt32(appid));
+            EmbedBuilder embed = new EmbedBuilder()
+                .WithColor(0, 0, 0)
+                .WithAuthor(author =>
+                {
+                    author
+                        .WithName(result[0].Name)
+                        .WithIconUrl(
+                            "https://upload.wikimedia.org/wikipedia/commons/thumb/8/83/Steam_icon_logo.svg/512px-Steam_icon_logo.svg.png")
+                        .WithUrl($"https://store.steampowered.com/app/{appid}/");
+                })
+                .WithThumbnailUrl(result[0].ImageLink);
+            embed.AddInlineField("Price", price);
+            if (game.ReleaseDate.ComingSoon)
+            {
+                embed.AddInlineField("Current Players", "🚫 Not available");
+            }
+            else
+            {
+                embed.AddInlineField("Current Players", playerCount.Result.Data);
+            }
+            if (game.Metacritic!=null)
+            {
+                embed.AddInlineField("Metacritic", $"[{game.Metacritic.Score}]({game.Metacritic.Url})");
+            }
+            else
+            {
+                if (game.Recommendations!=null)
+                {
+                    embed.AddInlineField("Recommendations", game.Recommendations.Total);
+                }
+                else
+                {
+                    embed.AddInlineField("Recommendations", "🚫 None available");
+                }
+            }
+
+            embed.AddInlineField("Releasedate", game.ReleaseDate.Date);
+            if (game.Website!=null)
+            {
+                embed.AddField("Website", game.Website);
+            }
+            await ReplyAsync("", false, embed.Build());
         }
     }
 }

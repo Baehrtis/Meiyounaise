@@ -97,7 +97,7 @@ namespace Meiyounaise.Core.Commands
         {
             GetKey();
             var message = await Context.Channel.GetMessagesAsync(2).Flatten();
-            await Translate("&to=de", message.Last().Content);
+            await Translate("&to=en", message.Last().Content);
             await ReplyAsync(jsontostring(_translated, false));
         }
     }
