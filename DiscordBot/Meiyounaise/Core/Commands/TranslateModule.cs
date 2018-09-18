@@ -1,104 +1,90 @@
 ﻿using System;
-using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
-using System.Net.Http;
 using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using Newtonsoft.Json;
+using Google.Apis.Auth.OAuth2;
+using Google.Cloud.Translation.V2;
 
 namespace Meiyounaise.Core.Commands
 {
-    [SuppressMessage("ReSharper", "StringIndexOfIsCultureSpecific.1")]
     public class TranslateModule : ModuleBase<SocketCommandContext>
     {
-        string _key = "";
-        string host = "https://api.cognitive.microsofttranslator.com";
-        string path = "/translate?api-version=3.0";
-        string _translated = "";
-        void GetKey()
+        private readonly GoogleCredential _credential = GetKey();
+        static GoogleCredential GetKey()
         {
-            using (var stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\TranslateKey.txt"), FileMode.Open, FileAccess.Read))
-            using (var readToken = new StreamReader(stream))
+            using (var jsonStream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\gTranslateKey.json"), FileMode.Open,
+                FileAccess.Read, FileShare.Read))
             {
-                _key = readToken.ReadToEnd();
+                return GoogleCredential.FromStream(jsonStream);
             }
         }
 
-        private string jsontostring(string input, bool de)
+        private string GTranslate(string text, string lang)
         {
-            int stelle = input.IndexOf("text\": \"");
-            input = input.Substring(stelle + 8);
-            if (de)
-            {
-                input = input.Substring(0, input.IndexOf(",\r\n        \"to\": \"de\"") - 1);
-            }
-            else
-            {
-                input = input.Substring(0, input.IndexOf(",\r\n        \"to\": \"en\"") - 1);
-            }
-            return input.Replace(@"\n", "\n");
-        }
-
-        private async Task Translate(string lang, [Remainder] string text)
-        {
-            string uri = host + path + lang;
-            Object[] body = { new { Text = text } };
-            var requestBody = JsonConvert.SerializeObject(body);
-
-            using (var client = new HttpClient())
-            using (var request = new HttpRequestMessage())
-            {
-                request.Method = HttpMethod.Post;
-                request.RequestUri = new Uri(uri);
-                request.Content = new StringContent(requestBody, Encoding.UTF8, "application/json");
-                request.Headers.Add("Ocp-Apim-Subscription-Key", _key);
-
-                var response = await client.SendAsync(request);
-                var responseBody = await response.Content.ReadAsStringAsync();
-                var result = JsonConvert.SerializeObject(JsonConvert.DeserializeObject(responseBody), Formatting.Indented);
-                Console.OutputEncoding = Encoding.UTF8;
-                _translated = result;
-            }
+            TranslationClient client = TranslationClient.Create(_credential);
+            return client.TranslateText(text, lang).TranslatedText;
         }
 
         //TRANSLATE TO DE
-        [Command("de", RunMode = RunMode.Async), Summary("Übersetzt shit zu deutsch")]
+        [Command("de")]
         public async Task Deutsch([Remainder] string text)
         {
-            GetKey();
-            await Translate("&to=de", text);
-            await ReplyAsync(jsontostring(_translated, true));
+            await ReplyAsync(GTranslate(text, LanguageCodes.German));
         }
-
         //TRANSLATE LAST MESSAGE TO DE
-        [Command("de", RunMode = RunMode.Async), Summary("Übersetzt shit zu deutsch")]
+        [Command("de")]
         public async Task Deutsch2()
         {
-            GetKey();
             var message = await Context.Channel.GetMessagesAsync(2).Flatten();
-            await Translate("&to=de", message.Last().Content);
-            await ReplyAsync(jsontostring(_translated, true));
+            await ReplyAsync(GTranslate(message.Last().Content, LanguageCodes.German));
         }
         //TRANSLATE TO EN
-        [Command("en", RunMode = RunMode.Async), Summary("Übersetzt shit zu deutsch")]
+        [Command("en")]
         public async Task Englisch([Remainder] string text)
         {
-            GetKey();
-            await Translate("&to=en", text);
-            await ReplyAsync(jsontostring(_translated, false));
+            await ReplyAsync(GTranslate(text, LanguageCodes.English));
         }
         //TRANSLATE LAST MESSAGE TO EN
-        [Command("en", RunMode = RunMode.Async), Summary("Übersetzt shit zu deutsch")]
+        [Command("en")]
         public async Task Englisch2()
         {
-            GetKey();
             var message = await Context.Channel.GetMessagesAsync(2).Flatten();
-            await Translate("&to=en", message.Last().Content);
-            await ReplyAsync(jsontostring(_translated, false));
+            await ReplyAsync(GTranslate(message.Last().Content, LanguageCodes.English));
+        }
+        //TRANSLATE TO ANY LANGUAGE
+        [Command("translate")]
+        public async Task AnyLanguage(string langcode, [Remainder]string text)
+        {
+            await ReplyAsync(GTranslate(text, langcode));
+        }
+        //TRANSLATE TO ANY LANGUAGE
+        [Command("translate")]
+        public async Task AnyLanguage2(string langcode)
+        {
+            if (langcode == "codes")
+            {
+                TranslationClient client = TranslationClient.Create(GetKey());
+                string result="";
+                foreach (var language in client.ListLanguages(LanguageCodes.English))
+                {
+                    result += $"{language.Name}\t\t{language.Code}\n";
+                }
+                try
+                {
+                    await Context.Client.GetUser(Context.Message.Author.Id).SendMessageAsync(result); 
+                    await Context.Message.AddReactionAsync(new Emoji("✅"));
+                }
+                catch (Exception e)
+                {
+                    await ReplyAsync(e.Message);
+                }
+                return;
+            }
+            var message = await Context.Channel.GetMessagesAsync(2).Flatten();
+            await ReplyAsync(GTranslate(message.Last().Content, langcode));
         }
     }
 }

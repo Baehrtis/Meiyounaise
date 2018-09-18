@@ -6,7 +6,7 @@ namespace Meiyounaise.Core.Commands
 {
     public class CommandList : ModuleBase<SocketCommandContext>
     {
-        [Command("commands"), Alias("help"), Summary("Insert first word between all others")]
+        [Command("commands"), Alias("help")]
         public async Task Commands()
         {
             string botavatar = Context.Guild.GetUser(488112585640509442).GetAvatarUrl();
@@ -36,6 +36,7 @@ namespace Meiyounaise.Core.Commands
                 .AddField("ri [Text]", "Returns your Input as Regional Indicators")
                 .AddField("&status [Game to play]", "Sets the Bot's Game (Playing X)")
                 .AddField("&steam [steamID64/Custom URL]", "Get Information about the provided Steam account")
+                .AddField("&translate [languagecode] (Text)","Translates text to the language you provided. You can get the bot to send you the language codes by typeing &translate codes")
                 .AddField("&unnerum (Sentence)", "Yeah idek");
             await Context.Channel.SendMessageAsync("", false, embed.Build());
         }
