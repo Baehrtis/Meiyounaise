@@ -27,7 +27,7 @@ namespace Meiyounaise.Core.Commands
                 catch (Exception ex)
                 {
                     Console.WriteLine($"Couldn't delete message on {Context.Guild.Name}, Error: {ex.Message}");
-                    await ReplyAsync("❌ I don't have permissions to delete messages on this Server");
+                    await ReplyAsync($"❌ Error: {ex.Message}");
                 }
             }
             else

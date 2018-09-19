@@ -37,7 +37,8 @@ namespace Meiyounaise.Core.Commands
                 .AddField("&status [Game to play]", "Sets the Bot's Game (Playing X)")
                 .AddField("&steam [steamID64/Custom URL]", "Get Information about the provided Steam account")
                 .AddField("&translate [languagecode] (Text)","Translates text to the language you provided. You can get the bot to send you the language codes by typeing &translate codes")
-                .AddField("&unnerum (Sentence)", "Yeah idek");
+                .AddField("&unnerum (Sentence)", "Yeah idek")
+                .AddField("&wa [Input]", "Uses Wolfram Alpha for evaluation and returns the result");
             await Context.Channel.SendMessageAsync("", false, embed.Build());
         }
     }
