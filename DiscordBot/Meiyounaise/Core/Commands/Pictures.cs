@@ -7,8 +7,8 @@ namespace Meiyounaise.Core.Commands
 {
     public class Pictures : ModuleBase<SocketCommandContext>
     {
-        [Command("bastard")]
-        public async Task Bastard()
+        [Command("angefahren")]
+        public async Task Angefahren()
         {
             await Context.Channel.SendFileAsync((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\bastard.jpg"));
         }
