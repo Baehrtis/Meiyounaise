@@ -28,15 +28,16 @@ namespace Meiyounaise.Core.Commands
                 .AddField("&en (Text to translate)", "Translates your text to English, if you provide no text, it translates the last message in the channel")
                 .AddField("&faceapp | &fa", "Shows the available FaceApp Filters and how to use them")
                 .AddField("&game [Game]| &sg | &g", "Returns information about the Game on Steam")
-                .AddField("&icon (Image URL/Attached Image)", "Changes the Bots Avatar to the provided URL/Image. If you provide none, it look at the last message in the channel")
+                .AddField("&icon (Image URL/Attached Image)", "Changes the Bots Avatar to the provided URL/Image. If you provide none, it looks at the last message in the channel")
                 .AddField("&lyrics [\"Artist\"] [Song name]","Gets the Lyrics to the provided song. If the Artist's name is more than one word, use \"\" around it. Yes, you need both Artist AND Songname")
+                .AddField("&money [Amount] [From] (To)","Converts Money to another currency, default \"To\" is EUR")
                 .AddField("&nickname [Name]", "Sets the Nickname of the Bot to Name")
                 .AddField("&ping", "Returns the Latencies of the Bot")
                 .AddField("&quote [Message ID]", "Quote somebody's message via the message ID, deletes your original message")
                 .AddField("ri [Text]", "Returns your Input as Regional Indicators")
                 .AddField("&status [Game to play]", "Sets the Bot's Game (Playing X)")
                 .AddField("&steam [steamID64/Custom URL]", "Get Information about the provided Steam account")
-                .AddField("&translate [languagecode] (Text)","Translates text to the language you provided. You can get the bot to send you the language codes by typeing &translate codes")
+                .AddField("&translate [languagecode] (Text)","Translates text to the language you provided. You can get the bot to send you the language codes by typing &translate codes")
                 .AddField("&unnerum (Sentence)", "Yeah idek")
                 .AddField("&wa [Input]", "Uses Wolfram Alpha for evaluation and returns the result");
             await Context.Channel.SendMessageAsync("", false, embed.Build());

@@ -119,8 +119,15 @@ namespace Meiyounaise.Core.Commands
         public async Task RegionalIndicator([Remainder]string input)
         {
             string result = input.ToLower();
-            result = result.Replace("a", "🇦 ").Replace("b", "🇧 ").Replace("c", "🇨 ").Replace("d", "🇩 ").Replace("e", "🇪 ").Replace("f", "🇫 ").Replace("g", "🇬 ").Replace("h", "🇭 ").Replace("i", "🇮 ").Replace("j", "🇯 ").Replace("k", "🇰 ").Replace("l", "🇱 ").Replace("m", "🇲 ").Replace("n", "🇳 ").Replace("o", "🇴 ").Replace("p", "🇵 ").Replace("q", "🇶 ").Replace("r", "🇷 ").Replace("s", "🇸 ").Replace("t", "🇹 ").Replace("u", "🇺 ").Replace("v", "🇻 ").Replace("w", "🇼 ").Replace("x", "🇽 ").Replace("y", "🇾 ").Replace("z", "🇿 ");
-            await ReplyAsync(result);
+            result = result.Replace("a", "🇦 ").Replace("b", "🅱 ").Replace("c", "🇨 ").Replace("d", "🇩 ").Replace("e", "🇪 ").Replace("f", "🇫 ").Replace("g", "🇬 ").Replace("h", "🇭 ").Replace("i", "🇮 ").Replace("j", "🇯 ").Replace("k", "🇰 ").Replace("l", "🇱 ").Replace("m", "🇲 ").Replace("n", "🇳 ").Replace("o", "🇴 ").Replace("p", "🇵 ").Replace("q", "🇶 ").Replace("r", "🇷 ").Replace("s", "🇸 ").Replace("t", "🇹 ").Replace("u", "🇺 ").Replace("v", "🇻 ").Replace("w", "🇼 ").Replace("x", "🇽 ").Replace("y", "🇾 ").Replace("z", "🇿 ");
+            try
+            {
+                await ReplyAsync(result);
+            }
+            catch (Exception e)
+            {
+                await ReplyAsync($"Error: `{e.Message}`");
+            }
         }
     }
 }

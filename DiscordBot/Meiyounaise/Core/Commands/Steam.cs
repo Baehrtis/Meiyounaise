@@ -199,7 +199,7 @@ namespace Meiyounaise.Core.Commands
                 }
             }
 
-            embed.AddInlineField("Releasedate", game.ReleaseDate.Date);
+            embed.AddInlineField("Release Date", game.ReleaseDate.Date);
             if (game.Website!=null)
             {
                 embed.AddField("Website", game.Website);

@@ -66,15 +66,49 @@ namespace Meiyounaise.Core.Commands
         {
             if (langcode == "codes")
             {
+                var embed = new EmbedBuilder();
+                var embed2 = new EmbedBuilder();
+                var embed3 = new EmbedBuilder();
+                var embed4 = new EmbedBuilder();
+                var embed5 = new EmbedBuilder();
                 TranslationClient client = TranslationClient.Create(GetKey());
-                string result="";
+                int i = 0;
                 foreach (var language in client.ListLanguages(LanguageCodes.English))
                 {
-                    result += $"{language.Name}\t\t{language.Code}\n";
+                    if (i < 25)
+                    {
+                        embed.AddInlineField(language.Name, language.Code);
+                        i++;
+                    }
+                    else if (i < 50)
+                    {
+                        embed2.AddInlineField(language.Name, language.Code);
+                        i++;
+                    }
+                    else if (i < 75)
+                    {
+                        embed3.AddInlineField(language.Name, language.Code);
+                        i++;
+                    }
+                    else if (i < 100)
+                    {
+                        embed4.AddInlineField(language.Name, language.Code);
+                        i++;
+                    }
+                    else if (i < 125)
+                    {
+                        embed5.AddInlineField(language.Name, language.Code);
+                        i++;
+                    }
                 }
                 try
                 {
-                    await Context.Client.GetUser(Context.Message.Author.Id).SendMessageAsync(result); 
+                    var dm = await Context.User.GetOrCreateDMChannelAsync();
+                    await dm.SendMessageAsync("", false, embed.Build());
+                    await dm.SendMessageAsync("", false, embed2.Build());
+                    await dm.SendMessageAsync("", false, embed3.Build());
+                    await dm.SendMessageAsync("", false, embed4.Build());
+                    await dm.SendMessageAsync("", false, embed5.Build());
                     await Context.Message.AddReactionAsync(new Emoji("✅"));
                 }
                 catch (Exception e)
