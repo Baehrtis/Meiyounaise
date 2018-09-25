@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -12,33 +11,6 @@ namespace Meiyounaise.Core.Commands
 {
     public class PlaySounds : ModuleBase<SocketCommandContext>
     {
-        private readonly ConcurrentDictionary<ulong, IAudioClient> _connectedChannels = new ConcurrentDictionary<ulong, IAudioClient>();
-
-        public async Task Join()
-        {
-            try
-            {
-                IAudioClient audioClient = await ((IVoiceState)Context.User).VoiceChannel.ConnectAsync();
-                if (_connectedChannels.TryAdd(Context.Guild.Id, audioClient))
-                {
-                }
-            }
-            catch (Exception)
-            {
-                await ReplyAsync("You need to be in a Voice Channel");
-            }
-
-
-        }
-        public async Task Leave()
-        {
-            IAudioClient client;
-            if (_connectedChannels.TryRemove(Context.Guild.Id, out client))
-            {
-                await client.StopAsync();
-            }
-        }
-
         [Command("play")]
         public async Task PlayTask(string name = "")
         {
@@ -47,29 +19,35 @@ namespace Meiyounaise.Core.Commands
                 await ReplyAsync("Usage: &play [Sound]\n\nAvailable Sounds:\n-`gls`\n-`kolamiteis`");
                 return;
             }
-            await Join();
-            await SendAudioAsync(Context.Guild, Context.Channel, name);
-            await Leave();
+            IAudioClient audioClient = null;
+            try
+            {
+                audioClient = await ((IVoiceState)Context.User).VoiceChannel.ConnectAsync();
+            }
+            catch (Exception)
+            {
+                await ReplyAsync("Bot couldn't connect, make sure you're in a voice channel!");
+            }
+            if (audioClient != null) await SendAudioAsync(audioClient, Context.Guild, Context.Channel, name);
+            if (audioClient != null) await audioClient.StopAsync();
         }
 
-        public async Task SendAudioAsync(IGuild guild, IMessageChannel channel, string path)
+        public async Task SendAudioAsync(IAudioClient client, IGuild guild, IMessageChannel channel, string path)
         {
             path = (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\") + path + ".mp3";
             if (!File.Exists(path))
             {
-                await channel.SendMessageAsync("File does not exist.");
+                await channel.SendMessageAsync("No Sound with that name!");
                 return;
             }
-            IAudioClient client;
-            if (_connectedChannels.TryGetValue(guild.Id, out client))
+
+            using (var ffmpeg = CreateProcess(path))
+            using (var stream = client.CreatePCMStream(AudioApplication.Music))
             {
-                using (var ffmpeg = CreateProcess(path))
-                using (var stream = client.CreatePCMStream(AudioApplication.Music))
-                {
-                    try { await ffmpeg.StandardOutput.BaseStream.CopyToAsync(stream); }
-                    finally { await stream.FlushAsync(); }
-                }
+                try { await ffmpeg.StandardOutput.BaseStream.CopyToAsync(stream); }
+                finally { await stream.FlushAsync(); }
             }
+
         }
 
         private Process CreateProcess(string path)
