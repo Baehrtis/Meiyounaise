@@ -12,15 +12,7 @@ namespace Meiyounaise.Core.Commands
 {
     public class TranslateModule : ModuleBase<SocketCommandContext>
     {
-        private readonly GoogleCredential _credential = GetKey();
-        static GoogleCredential GetKey()
-        {
-            using (var jsonStream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\gTranslateKey.json"), FileMode.Open,
-                FileAccess.Read, FileShare.Read))
-            {
-                return GoogleCredential.FromStream(jsonStream);
-            }
-        }
+        private readonly GoogleCredential _credential = GoogleCredential.FromFile((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\gTranslateKey.json"));
 
         private string GTranslate(string text, string lang)
         {
@@ -71,7 +63,7 @@ namespace Meiyounaise.Core.Commands
                 var embed3 = new EmbedBuilder();
                 var embed4 = new EmbedBuilder();
                 var embed5 = new EmbedBuilder();
-                TranslationClient client = TranslationClient.Create(GetKey());
+                TranslationClient client = TranslationClient.Create(_credential);
                 int i = 0;
                 foreach (var language in client.ListLanguages(LanguageCodes.English))
                 {

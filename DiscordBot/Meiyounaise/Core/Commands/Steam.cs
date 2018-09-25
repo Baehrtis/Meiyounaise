@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
-using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -14,16 +12,8 @@ namespace Meiyounaise.Core.Commands
     public class Steam : ModuleBase<SocketCommandContext>
     {
         private SteamUser _sInterface;
-        private string _key = "";
+        private readonly string _key = Utilities.GetKey("steamkey");
 
-        private void GetKey()
-        {
-            using (var stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\SteamKey.txt"), FileMode.Open, FileAccess.Read))
-            using (var readToken = new StreamReader(stream))
-            {
-                _key = readToken.ReadToEnd();
-            }
-        }
 
         private EmbedBuilder BuildBaseEmbed(ulong id)
         {
@@ -102,7 +92,6 @@ namespace Meiyounaise.Core.Commands
                 await ReplyAsync("This is not a valid Custom URL/SteamID64");
                 return;
             }
-            GetKey();
             _sInterface = new SteamUser(_key);
             ulong id;
             try
@@ -126,7 +115,6 @@ namespace Meiyounaise.Core.Commands
         [Command("steam")]
         public async Task SteamTask(ulong id)
         {
-            GetKey();
             _sInterface = new SteamUser(_key);
             if (_sInterface.GetCommunityProfileAsync(id).Result.VisibilityState.ToString() == "1")//CHECK IF PROFILE IS PRIVATE
             {
@@ -139,7 +127,6 @@ namespace Meiyounaise.Core.Commands
         [Command("game"),Alias("sg","g")]
         public async Task Game([Remainder]string name)
         {
-            GetKey();
             string price = "F2P";
             var result = Query.Search(name);
             if (result.Count<1)

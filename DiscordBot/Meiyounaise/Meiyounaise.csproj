@@ -18,6 +18,8 @@
 
   <ItemGroup>
     <Folder Include="Core\Data\" />
+    <Folder Include="lib\64\" />
+    <Folder Include="lib\32\" />
     <Folder Include="Resources\Database\" />
     <Folder Include="Resources\Datatypes\" />
   </ItemGroup>

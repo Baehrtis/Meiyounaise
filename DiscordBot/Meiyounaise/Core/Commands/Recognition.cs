@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
 using System.Threading.Tasks;
+using Discord;
 using Discord.Commands;
 using Newtonsoft.Json.Linq;
 
@@ -39,18 +41,33 @@ namespace Meiyounaise.Core.Commands
         }
 
         [Command("emotion")]
-        public async Task Emotion(string eurl = "")
+        public async Task Emotion(string url = "")
         {
-            string key;
-            using (var stream =
-                new FileStream(
-                    (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1",
-                        @"Data\EmotionKey.txt"), FileMode.Open, FileAccess.Read))
-            using (var readToken = new StreamReader(stream))
+            string key = Utilities.GetKey("emotionkey");
+            var lm = await Context.Channel.GetMessagesAsync(2).Flatten();
+            var message = lm.Last(); //GET LAST MESSAGE
+            if (Context.Message.Attachments.Count != 0)//CURRENT MESSAGE HAS ATTACHMENT
             {
-                key = readToken.ReadToEnd();
+                url = Context.Message.Attachments.FirstOrDefault()?.Url;
             }
-
+            else//CURRENT MESSAGE DOES NOT HAVE ATTACHMENT
+            {
+                if (url != "")//IMAGE URL PROVIDED
+                {
+                    //do nothing
+                }
+                else//NO IMAGE URL PROVIDED
+                {
+                    if (message.Attachments.Count != 0)
+                    {
+                        url = message.Attachments.FirstOrDefault()?.Url;
+                    }
+                    else
+                    {
+                        url = message.Content;
+                    }
+                }
+            }
             GC.Collect();
             GC.WaitForPendingFinalizers();
             bool cont = true;
@@ -59,7 +76,7 @@ namespace Meiyounaise.Core.Commands
                     @"Data\emotion.png");
             try
             {
-                await DownloadAsync(new Uri(eurl), imageFilePath);
+                await DownloadAsync(new Uri(url), imageFilePath);
             }
             catch (Exception e)
             {
@@ -91,7 +108,6 @@ namespace Meiyounaise.Core.Commands
                         response = await client.PostAsync(uri, content);
                         responseContent = response.Content.ReadAsStringAsync().Result;
                     }
-
                     // Processing the JSON into manageable objects.
                     JToken rootToken = JArray.Parse(responseContent).First;
                     // First token is always the faceRectangle identified by the API.
@@ -118,7 +134,6 @@ namespace Meiyounaise.Core.Commands
                         "This means that either the API didn't recognize a face, or shit itself in other ways. Try a different picture");
                 }
             }
-
             GC.Collect();
             GC.WaitForPendingFinalizers();
             File.Delete((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(

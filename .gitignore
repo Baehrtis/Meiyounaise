@@ -216,14 +216,7 @@ project.lock.json
 #####
 # End of core ignore list, below put you custom 'per project' settings (patterns or path)
 #####
-Token.txt
-EmotionKey.txt
-TranslateKey.txt
-SteamKey.txt
 *.sln
-trusted.txt
 icon.png
-LyricsKey.txt
 gTranslateKey.json
-WolframKey.txt
-FixerKey.txt
+keys.json

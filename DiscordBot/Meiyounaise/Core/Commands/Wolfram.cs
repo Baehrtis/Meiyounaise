@@ -1,7 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using WAWrapper;
@@ -14,11 +11,7 @@ namespace Meiyounaise.Core.Commands
         public async Task WolframTask([Remainder]string input)
         {
             var client = new WAEngine();
-            using (var stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\WolframKey.txt"), FileMode.Open, FileAccess.Read))
-            using (var readToken = new StreamReader(stream))
-            {
-                client.APIKey = readToken.ReadToEnd();
-            }
+            client.APIKey = Utilities.GetKey("wolframkey");
             var result = client.RunQuery(input);
             var embed = new EmbedBuilder()
                 .WithAuthor(author =>
@@ -38,10 +31,8 @@ namespace Meiyounaise.Core.Commands
                 {
                     if (pod.SubPods != null)
                     {
-                        Console.WriteLine(pod.Title);
                         foreach (var subpod in pod.SubPods)
                         {
-                            Console.WriteLine("    " + subpod.PlainText);
                             if (subpod.PlainText != ""&&i<25)
                             {
                                 embed.AddField(pod.Title, subpod.PlainText);

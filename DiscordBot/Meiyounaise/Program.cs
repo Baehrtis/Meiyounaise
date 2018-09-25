@@ -29,9 +29,7 @@ namespace Meiyounaise
             //Command Service to link modules
             _mCommands = new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false, DefaultRunMode = RunMode.Async, LogLevel = LogSeverity.Debug });
             _mServices = InstallServices();
-            string token;
-            using (var stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\Token.txt"), FileMode.Open, FileAccess.Read))
-            using (var readToken = new StreamReader(stream)) { token = readToken.ReadToEnd(); }
+            string token= Utilities.GetKey("token");
             await _mClient.LoginAsync(TokenType.Bot, token);
             await _mClient.StartAsync();
             await InstallCommands();

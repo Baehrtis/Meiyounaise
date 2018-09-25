@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
 using Discord.Commands;
 // ReSharper disable StringIndexOfIsCultureSpecific.1
@@ -13,12 +11,7 @@ namespace Meiyounaise.Core.Commands
         [Command("lyrics")]
         public async Task LyricsTask(string artist, [Remainder]string track)
         {
-            string key;
-            using (var stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\LyricsKey.txt"), FileMode.Open, FileAccess.Read))
-            using (var readToken = new StreamReader(stream))
-            {
-                key = readToken.ReadToEnd();
-            }
+            string key = Utilities.GetKey("lyricskey");
             string result;
             Uri url = new Uri("https://orion.apiseeds.com/api/music/lyric/" + artist + "/" + track + key);
             try
