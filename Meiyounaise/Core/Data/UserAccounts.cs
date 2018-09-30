@@ -20,7 +20,6 @@ namespace Meiyounaise.Core.Data
                 accounts = new List<UserAccount>();
                 SaveAccounts();
             }
-
         }
 
         public static void SaveAccounts()
