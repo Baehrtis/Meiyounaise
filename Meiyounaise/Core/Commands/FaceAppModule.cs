@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -47,15 +46,12 @@ namespace Meiyounaise.Core.Commands
                     var code = await faceAppClient.GetCodeAsync(uri);
                     using (var imgStream = await faceAppClient.ApplyFilterAsync(code, type))
                     {
-                        var stream = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\fa.png"), FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
+                        var stream = new FileStream(Utilities.dataPath + "fa.png", FileMode.Create, FileAccess.Write, FileShare.None, 4096, true);
                         await imgStream.CopyToAsync(stream);
                         stream.Close();
                         imgStream.Close();
-                        await Context.Channel.SendFileAsync(
-                            (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(
-                                @"bin\Debug\netcoreapp2.1", @"Data\fa.png"));
-                        File.Delete((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(
-                            @"bin\Debug\netcoreapp2.1", @"Data\fa.png"));
+                        await Context.Channel.SendFileAsync(Utilities.dataPath + "fa.png");
+                        File.Delete(Utilities.dataPath + "fa.png");
                     }
                 }
                 catch (FaceException e)

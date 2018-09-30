@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -12,7 +10,7 @@ namespace Meiyounaise.Core.Commands
 {
     public class TranslateModule : ModuleBase<SocketCommandContext>
     {
-        private readonly GoogleCredential _credential = GoogleCredential.FromFile((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\gTranslateKey.json"));
+        private readonly GoogleCredential _credential = GoogleCredential.FromFile(Utilities.dataPath + "gTranslateKey.json");
 
         private string GTranslate(string text, string lang)
         {

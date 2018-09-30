@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -71,9 +70,7 @@ namespace Meiyounaise.Core.Commands
             GC.Collect();
             GC.WaitForPendingFinalizers();
             bool cont = true;
-            string imageFilePath =
-                (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1",
-                    @"Data\emotion.png");
+            string imageFilePath = Utilities.dataPath + "emotion.png";
             try
             {
                 await DownloadAsync(new Uri(url), imageFilePath);
@@ -136,9 +133,7 @@ namespace Meiyounaise.Core.Commands
             }
             GC.Collect();
             GC.WaitForPendingFinalizers();
-            File.Delete((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(
-                @"bin\Debug\netcoreapp2.1",
-                @"Data\emotion.png"));
+            File.Delete(Utilities.dataPath + "emotion.png");
         }
     }
 }

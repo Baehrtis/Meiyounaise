@@ -1,6 +1,4 @@
-﻿using System.IO;
-using System.Reflection;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Discord.Commands;
 
 namespace Meiyounaise.Core.Commands
@@ -10,13 +8,13 @@ namespace Meiyounaise.Core.Commands
         [Command("angefahren")]
         public async Task Angefahren()
         {
-            await Context.Channel.SendFileAsync((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\bastard.jpg"));
+            await Context.Channel.SendFileAsync(Utilities.dataPath + "bastard.jpg");
         }
 
         [Command("blod")]
         public async Task Blod()
         {
-            await Context.Channel.SendFileAsync((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\blod.png"));
+            await Context.Channel.SendFileAsync(Utilities.dataPath + "blod.png");
         }
     }
 }

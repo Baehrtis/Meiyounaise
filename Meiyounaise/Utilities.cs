@@ -7,19 +7,23 @@ namespace Meiyounaise
 {
     class Utilities
     {
-        private static Dictionary<string, string> keys;
+        private static readonly Dictionary<string, string> Keys;
+        
+        internal static string dataPath =
+            (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace($@"bin{Path.DirectorySeparatorChar}Debug{Path.DirectorySeparatorChar}netcoreapp2.1", $@"Data{Path.DirectorySeparatorChar}");
+        
         static Utilities()
         {
-            string json = File.ReadAllText((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\keys.json"));
+            string json = File.ReadAllText(dataPath+"keys.json");
             var data = JsonConvert.DeserializeObject<dynamic>(json);
-            keys = data.ToObject<Dictionary<string, string>>();
+            Keys = data.ToObject<Dictionary<string, string>>();
         }
 
         public static string GetKey(string name)
         {
-            if (keys.ContainsKey(name))
+            if (Keys.ContainsKey(name))
             {
-                return keys[name];
+                return Keys[name];
             }
             return "";
         }

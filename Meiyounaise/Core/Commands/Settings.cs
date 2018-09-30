@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -50,7 +49,7 @@ namespace Meiyounaise.Core.Commands
         {
             var lm = await Context.Channel.GetMessagesAsync(2).Flatten();
             var message = lm.Last(); //GET LAST MESSAGE
-            var path = (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\icon.png");
+            var path = Utilities.dataPath + "icon.png";
             try
             {
                 string durl;
@@ -79,7 +78,7 @@ namespace Meiyounaise.Core.Commands
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 await DownloadAsync(new Uri(durl), path);
-                var avatar = new FileStream((Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\icon.png"), FileMode.Open);
+                var avatar = new FileStream(Utilities.dataPath + "icon.png", FileMode.Open);
                 try
                 {
                     await (Context.Client.CurrentUser).ModifyAsync(x => x.Avatar = new Image(avatar));

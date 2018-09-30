@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
-using System.Reflection;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Audio;
@@ -32,9 +31,9 @@ namespace Meiyounaise.Core.Commands
             if (audioClient != null) await audioClient.StopAsync();
         }
 
-        public async Task SendAudioAsync(IAudioClient client, IGuild guild, IMessageChannel channel, string path)
+        public async Task SendAudioAsync(IAudioClient client, IGuild guild, IMessageChannel channel, string fn)
         {
-            path = (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\") + path + ".mp3";
+            string path = Utilities.dataPath + fn + ".mp3";
             if (!File.Exists(path))
             {
                 await channel.SendMessageAsync("No Sound with that name!");
@@ -59,7 +58,7 @@ namespace Meiyounaise.Core.Commands
         {
             return Process.Start(new ProcessStartInfo
             {
-                FileName = "ffmpeg.exe",
+                FileName = "ffmpeg",
                 Arguments = $"-hide_banner -loglevel panic -i \"{path}\" -ac 2 -f s16le -ar 48000 pipe:1",
                 UseShellExecute = false,
                 RedirectStandardOutput = true

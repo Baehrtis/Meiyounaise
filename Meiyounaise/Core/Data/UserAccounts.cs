@@ -1,8 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Discord.WebSocket;
 
 namespace Meiyounaise.Core.Data
@@ -11,12 +8,12 @@ namespace Meiyounaise.Core.Data
     {
         private static List<UserAccount> accounts;
 
-        private static string accountsFile = (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace(@"bin\Debug\netcoreapp2.1", @"Data\accounts.json");
+        private static readonly string AccountsFile = Utilities.dataPath + "accounts.json";
         static UserAccounts()
         {
-            if (DataStorage.SaveExists(accountsFile))
+            if (DataStorage.SaveExists(AccountsFile))
             {
-                accounts = DataStorage.LoadUsers(accountsFile).ToList();
+                accounts = DataStorage.LoadUsers(AccountsFile).ToList();
             }
             else
             {
@@ -28,7 +25,7 @@ namespace Meiyounaise.Core.Data
 
         public static void SaveAccounts()
         {
-            DataStorage.SaveUsers(accounts,accountsFile);
+            DataStorage.SaveUsers(accounts,AccountsFile);
         }
 
         public static UserAccount GetAccount(SocketUser user)
@@ -39,7 +36,7 @@ namespace Meiyounaise.Core.Data
         private static UserAccount GetOrCreateAccount(ulong id)
         {
             var result = from a in accounts
-                where a.ID == id
+                where a.Id == id
                 select a;
             var account = result.FirstOrDefault();
             if (account == null) account = CreateUserAccount(id);
@@ -50,7 +47,7 @@ namespace Meiyounaise.Core.Data
         {
             var newAccount = new UserAccount()
             {
-                ID=id
+                Id=id
             };
             accounts.Add(newAccount);
             SaveAccounts();
