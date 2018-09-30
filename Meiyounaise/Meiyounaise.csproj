@@ -15,6 +15,7 @@
     <PackageReference Include="Discord.Net" Version="1.0.2" />
     <PackageReference Include="FixerSharp" Version="1.2.1" />
     <PackageReference Include="Google.Cloud.Translation.V2" Version="1.1.0" />
+    <PackageReference Include="Inflatable.Lastfm" Version="1.1.0.339" />
     <PackageReference Include="Microsoft.ProjectOxford.Emotion" Version="2.0.40" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
     <PackageReference Include="SteamStoreQuery" Version="1.0.4" />
@@ -23,7 +24,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Core\Data\" />
     <Folder Include="Resources\Database\" />
     <Folder Include="Resources\Datatypes\" />
   </ItemGroup>

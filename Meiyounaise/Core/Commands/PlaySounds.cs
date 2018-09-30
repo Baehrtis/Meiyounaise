@@ -44,10 +44,15 @@ namespace Meiyounaise.Core.Commands
             using (var ffmpeg = CreateProcess(path))
             using (var stream = client.CreatePCMStream(AudioApplication.Music))
             {
-                try { await ffmpeg.StandardOutput.BaseStream.CopyToAsync(stream); }
-                finally { await stream.FlushAsync(); }
+                try
+                {
+                    await ffmpeg.StandardOutput.BaseStream.CopyToAsync(stream);
+                }
+                finally
+                {
+                    await stream.FlushAsync();
+                }
             }
-
         }
 
         private Process CreateProcess(string path)

@@ -13,8 +13,7 @@ namespace Meiyounaise.Core.Commands
     {
         private SteamUser _sInterface;
         private readonly string _key = Utilities.GetKey("steamkey");
-
-
+        
         private EmbedBuilder BuildBaseEmbed(ulong id)
         {
             string vac = ":white_check_mark: Clean";
