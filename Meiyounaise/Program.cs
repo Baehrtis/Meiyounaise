@@ -29,17 +29,17 @@ namespace Meiyounaise
             //Command Service to link modules
             _mCommands = new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false, DefaultRunMode = RunMode.Async, LogLevel = LogSeverity.Debug });
             _mServices = InstallServices();
-            string token= Utilities.GetKey("token");
+            string token = Utilities.GetKey("token");
             await _mClient.LoginAsync(TokenType.Bot, token);
             await _mClient.StartAsync();
             await InstallCommands();
 
             await Task.Delay(-1);
         }
-//        private async Task Client_Log(LogMessage Message)
-//        {
-//            Console.WriteLine($"{DateTime.Now} at {Message.Source}] {Message.Message}");
-//        }
+        //        private async Task Client_Log(LogMessage Message)
+        //        {
+        //            Console.WriteLine($"{DateTime.Now} at {Message.Source}] {Message.Message}");
+        //        }
         private async Task Ready()
         {
             Random ran = new Random();
@@ -65,7 +65,7 @@ namespace Meiyounaise
                 await context.Channel.SendMessageAsync($"Something went wrong. Error: `{result.ErrorReason}`");
             }
         }
-        
+
         private Task Disconnected(Exception arg)
         {
             Console.WriteLine("Disconnected");
@@ -82,7 +82,7 @@ namespace Meiyounaise
         {
             ServiceCollection services = new ServiceCollection();
             // Add all additional services here.
-           // Return the service provider.
+            // Return the service provider.
             return services.BuildServiceProvider();
         }
 

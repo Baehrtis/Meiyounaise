@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
+using Urban.NET;
 
 namespace Meiyounaise.Core.Commands
 {
@@ -128,6 +129,23 @@ namespace Meiyounaise.Core.Commands
             {
                 await ReplyAsync($"Error: `{e.Message}`");
             }
+        }
+        //UD
+        [Command("ud")]
+        public async Task UrbanDictionary([Remainder]string word)
+        {
+            UrbanService client = new UrbanService();
+            var data = await client.Data(word);
+            string def  = data.List.First().Definition.Replace("[","");
+            def = def.Replace("]", "");
+            var embed = new EmbedBuilder()
+                .WithColor(200, 200, 0)
+                .WithTitle(data.List.First().Word)
+                .WithUrl(data.List.First().Permalink)
+                .WithDescription(def)
+                .AddInlineField("Rating", $"👍{data.List.First().ThumbsUp}\t👎{data.List.First().ThumbsDown}");
+
+            await ReplyAsync($"Top Definition for {data.List.First().Word}:",false,embed.Build());
         }
     }
 }

@@ -75,5 +75,13 @@ namespace Meiyounaise.Core.Commands
                 .WithCurrentTimestamp();
             await ReplyAsync("", false, embed.Build());
         }
+
+        [Command("charts")]
+        public async Task Charts(string year="")
+        {
+            var client = new LastfmClient(Utilities.GetKey("lastkey"), Utilities.GetKey("lastsecret"), new HttpClient());
+            var response = await client.Chart.GetTopTracksAsync();
+        }
+
     }
 }

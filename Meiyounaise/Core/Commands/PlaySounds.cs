@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Audio;
@@ -10,6 +11,27 @@ namespace Meiyounaise.Core.Commands
 {
     public class PlaySounds : ModuleBase<SocketCommandContext>
     {
+        [Command("dla")]
+        [RequireOwner]
+        public async Task DownloadAudio(string name, string url)
+        {
+            HttpClientHandler handler = new HttpClientHandler();
+            using (var httpClient = new HttpClient(handler, false))
+            {
+                using (var request = new HttpRequestMessage(HttpMethod.Get, url))
+                {
+                    using (
+                        Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),
+                        stream = new FileStream(Utilities.dataPath+name+".mp3", FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
+                    {
+                        await contentStream.CopyToAsync(stream);
+                    }
+                }
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
+
         [Command("play")]
         public async Task PlayTask(string name = "")
         {

@@ -27,6 +27,7 @@ namespace Meiyounaise.Core.Commands
                 .AddField("&emotion [Image URL]", "Reads the Emotions of a face")
                 .AddField("&en (Text to translate)", "Translates your text to English, if you provide no text, it translates the last message in the channel")
                 .AddField("&faceapp | &fa", "Shows the available FaceApp Filters and how to use them")
+                .AddField("&fm", "Gets your last played/currently playing song if you gave the bot your last.fm username")
                 .AddField("&game [Game]| &sg | &g", "Returns information about the Game on Steam")
                 .AddField("&icon (Image URL/Attached Image)", "Changes the Bots Avatar to the provided URL/Image. If you provide none, it looks at the last message in the channel")
                 .AddField("&lyrics [\"Artist\"] [Song name]","Gets the Lyrics to the provided song. If the Artist's name is more than one word, use \"\" around it. Yes, you need both Artist AND Songname")
@@ -38,9 +39,10 @@ namespace Meiyounaise.Core.Commands
                 .AddField("&status [Game to play]", "Sets the Bot's Game (Playing X)")
                 .AddField("&steam [steamID64/Custom URL]", "Get Information about the provided Steam account")
                 .AddField("&translate [languagecode] (Text)","Translates text to the language you provided. You can get the bot to send you the language codes by typing &translate codes")
+                .AddField("&ud [word]","Gets the top definition for your word from urban dictionary")
                 .AddField("&unnerum (Sentence)", "Yeah idek")
                 .AddField("&wa [Input]", "Uses Wolfram Alpha for evaluation and returns the result");
-            await Context.Channel.SendMessageAsync("", false, embed.Build());
+            await ReplyAsync("", false, embed.Build());
         }
     }
 }
