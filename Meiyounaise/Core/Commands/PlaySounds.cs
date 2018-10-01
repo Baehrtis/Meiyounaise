@@ -15,29 +15,64 @@ namespace Meiyounaise.Core.Commands
         [RequireOwner]
         public async Task DownloadAudio(string name, string url)
         {
-            HttpClientHandler handler = new HttpClientHandler();
-            using (var httpClient = new HttpClient(handler, false))
+            try
             {
-                using (var request = new HttpRequestMessage(HttpMethod.Get, url))
+                HttpClientHandler handler = new HttpClientHandler();
+                using (var httpClient = new HttpClient(handler, false))
                 {
-                    using (
-                        Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),
-                        stream = new FileStream(Utilities.dataPath+name+".mp3", FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
+                    using (var request = new HttpRequestMessage(HttpMethod.Get, url))
                     {
-                        await contentStream.CopyToAsync(stream);
+                        using (
+                            Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),
+                            stream = new FileStream(Utilities.dataPath + name + ".mp3", FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
+                        {
+                            await contentStream.CopyToAsync(stream);
+                        }
                     }
                 }
+                await Context.Message.AddReactionAsync(new Emoji("✅"));
+            }
+            catch (Exception e)
+            {
+                await ReplyAsync(e.Message);
             }
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }
+
+        [Command("rma")]
+        [RequireOwner]
+        public async Task Delete(string name)
+        {
+            try
+            {
+                File.Delete(Utilities.dataPath + name + ".mp3");
+                await Context.Message.AddReactionAsync(new Emoji("✅"));
+            }
+            catch (Exception e)
+            {
+                await ReplyAsync(e.Message);
+            }
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+        }
+
+
 
         [Command("play")]
         public async Task PlayTask(string name = "")
         {
             if (name == "")
             {
-                await ReplyAsync("Usage: &play [Sound]\n\nAvailable Sounds:\n-`gls`\n-`kolamiteis`");
+                string[] files = Directory.GetFiles(Utilities.dataPath, "*.mp3");
+                string result = "";
+                foreach (var file in files)
+                {
+                    string file2 = file.Substring(file.IndexOf("Data")+5);
+                    file2 = file2.Substring(0,file2.IndexOf(".mp3"));
+                    result += $"-`{file2}`\n";
+                }
+                await ReplyAsync($"Usage: &play [Sound]\n\nAvailable Sounds:\n{result}");
                 return;
             }
             IAudioClient audioClient = null;
