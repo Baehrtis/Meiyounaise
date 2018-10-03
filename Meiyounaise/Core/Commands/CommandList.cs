@@ -9,18 +9,18 @@ namespace Meiyounaise.Core.Commands
         [Command("commands"), Alias("help")]
         public async Task Commands()
         {
-            string botavatar = Context.Guild.GetUser(488112585640509442).GetAvatarUrl();
-            EmbedBuilder embed = new EmbedBuilder()
+            var embed = new EmbedBuilder()
                 .WithColor(255, 255, 255)
                 .WithAuthor(author =>
                 {
                     author
                         .WithName("Meiyounaise")
-                        .WithIconUrl(botavatar);
-                }) //Avatar,Bilder,Clap,Emotion,Icon,Nickname,Ping,Quote,Status,Steam,Translate,Unnerum
+                        .WithIconUrl(Context.Client.CurrentUser.GetAvatarUrl());
+                })
                 .WithDescription("**Commands for the Bot. [] are necessary, () are optional**")
                 .AddField("&avatar [@User]", "Gets the provided users Avatar")
                 .AddField("Pictures", "&angefahren, &blod")
+                .AddField("&charts","Returns the current Top 25 Spotify Charts")
                 .AddField("&clap [Word to set] [Sentence]", "Places the first words between all other words in the sentence")
                 .AddField("&de (Text to Translate)", "Translates your text to German, if you provide no text, it translates the last message in the channel")
                 .AddField("&e [Emote]", "Enlarges the emote you provided")
@@ -34,6 +34,7 @@ namespace Meiyounaise.Core.Commands
                 .AddField("&money [Amount] [From] (To)","Converts Money to another currency, default \"To\" is EUR")
                 .AddField("&nickname [Name]", "Sets the Nickname of the Bot to Name")
                 .AddField("&ping", "Returns the Latencies of the Bot")
+                .AddField("&play (file)","Plays a sound. Make sure you're in a voice Channel")
                 .AddField("&quote [Message ID]", "Quote somebody's message via the message ID, deletes your original message")
                 .AddField("ri [Text]", "Returns your Input as Regional Indicators")
                 .AddField("&status [Game to play]", "Sets the Bot's Game (Playing X)")

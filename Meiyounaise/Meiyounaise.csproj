@@ -18,8 +18,10 @@
     <PackageReference Include="Inflatable.Lastfm" Version="1.1.0.339" />
     <PackageReference Include="Microsoft.ProjectOxford.Emotion" Version="2.0.40" />
     <PackageReference Include="Newtonsoft.Json" Version="11.0.2" />
+    <PackageReference Include="SpotifyAPI-NET" Version="2.19.0" />
     <PackageReference Include="SteamStoreQuery" Version="1.0.4" />
     <PackageReference Include="SteamWebAPI2" Version="4.0.8" />
+    <PackageReference Include="TMDbLib" Version="1.0.0" />
     <PackageReference Include="Urban.NET" Version="1.0.0" />
     <PackageReference Include="WAWrapper" Version="1.0.2" />
   </ItemGroup>

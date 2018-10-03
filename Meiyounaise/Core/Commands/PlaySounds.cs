@@ -56,9 +56,7 @@ namespace Meiyounaise.Core.Commands
             GC.Collect();
             GC.WaitForPendingFinalizers();
         }
-
-
-
+        
         [Command("play")]
         public async Task PlayTask(string name = "")
         {

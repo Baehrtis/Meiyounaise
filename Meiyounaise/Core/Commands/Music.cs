@@ -1,14 +1,18 @@
-﻿using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using Discord;
+﻿using Discord;
 using Discord.Commands;
 using IF.Lastfm.Core.Api;
 using Meiyounaise.Core.Data;
+using SpotifyAPI.Web;
+using SpotifyAPI.Web.Auth;
+using SpotifyAPI.Web.Enums;
+using SpotifyAPI.Web.Models;
+using System.Linq;
+using System.Net.Http;
+using System.Threading.Tasks;
 
 namespace Meiyounaise.Core.Commands
 {
-    public class Lastfm : ModuleBase<SocketCommandContext>
+    public class Music : ModuleBase<SocketCommandContext>
     {
         [Command("fm")]
         public async Task FmUser(string cmd, string username = "")
@@ -77,11 +81,50 @@ namespace Meiyounaise.Core.Commands
         }
 
         [Command("charts")]
-        public async Task Charts(string year="")
+        public async Task Charts(string year = "")
         {
-            var client = new LastfmClient(Utilities.GetKey("lastkey"), Utilities.GetKey("lastsecret"), new HttpClient());
-            var response = await client.Chart.GetTopTracksAsync();
-        }
+            ClientCredentialsAuth auth = new ClientCredentialsAuth()
+            {
+                ClientId = Utilities.GetKey("spid"),
+                ClientSecret = Utilities.GetKey("spsecret"),
+                Scope = Scope.UserReadPrivate
+            };
+            Token token = auth.DoAuth();
 
+            SpotifyWebAPI spotify = new SpotifyWebAPI()
+            {
+                TokenType = token.TokenType,
+                AccessToken = token.AccessToken,
+                UseAuth = true
+            };
+            
+            var playlist = spotify.GetPlaylistTracks("spotifycharts", "37i9dQZEVXbMDoHDwVN2tF","",25);
+            int i = 1;
+            var embed = new EmbedBuilder()
+                .WithAuthor(author =>
+                {
+                    author
+                        .WithName("Global Spotify Charts")
+                        .WithUrl("https://open.spotify.com/user/spotifycharts/playlist/37i9dQZEVXbMDoHDwVN2tF?si=ln52hfPKQ-KAKEmXDips2A")
+                        .WithIconUrl("https://upload.wikimedia.org/wikipedia/commons/thumb/1/19/Spotify_logo_without_text.svg/500px-Spotify_logo_without_text.svg.png");
+                })
+                .WithColor(29, 185, 84);
+            foreach (var entry in playlist.Items)
+            {
+                string artists = entry.Track.Artists.First().Name;
+                if (entry.Track.Artists.Count > 1)
+                {
+                    artists = "";
+                    foreach (var artist in entry.Track.Artists)
+                    {
+                        artists += $"{artist.Name}, ";
+                    }
+                    artists = artists.Remove(artists.Length - 2);
+                }
+                embed.AddField($"#{i} {entry.Track.Name}", $"[by {artists}]({entry.Track.ExternUrls.First().Value})");
+                i++;
+            }
+            await ReplyAsync("",false,embed.Build());
+        }
     }
 }
