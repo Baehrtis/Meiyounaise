@@ -9,12 +9,12 @@ namespace Meiyounaise
     {
         private static readonly Dictionary<string, string> Keys;
         
-        internal static string dataPath =
+        internal static string DataPath =
             (Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)).Replace($@"bin{Path.DirectorySeparatorChar}Debug{Path.DirectorySeparatorChar}netcoreapp2.1", $@"Data{Path.DirectorySeparatorChar}");
         
         static Utilities()
         {
-            string json = File.ReadAllText(dataPath+"keys.json");
+            string json = File.ReadAllText(DataPath+"keys.json");
             var data = JsonConvert.DeserializeObject<dynamic>(json);
             Keys = data.ToObject<Dictionary<string, string>>();
         }

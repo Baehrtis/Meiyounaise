@@ -1,75 +1,59 @@
 ﻿using System;
-using System.Reflection;
-using System.IO;
 using System.Threading.Tasks;
 using Discord;
-using Discord.WebSocket;
 using Discord.Commands;
+using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
-using Random = System.Random;
+using Discord.Addons.Interactive;
+using System.Reflection;
 
 namespace Meiyounaise
 {
     class Program
     {
-        //Private Variables
-        private DiscordSocketClient _mClient;
-        private CommandService _mCommands;
-        // ReSharper disable once NotAccessedField.Local
-        private IServiceProvider _mServices;
-
-        //MAIN
         static void Main()
-            => new Program().RunAsync().GetAwaiter().GetResult();
+            => new Program().MainAsync().GetAwaiter().GetResult();
 
-        //STARTING UP
-        private async Task RunAsync()
-        {   //Discord Client
-            _mClient = new DiscordSocketClient(new DiscordSocketConfig { LogLevel = LogSeverity.Info });
-            //Command Service to link modules
-            _mCommands = new CommandService(new CommandServiceConfig { CaseSensitiveCommands = false, DefaultRunMode = RunMode.Async, LogLevel = LogSeverity.Debug });
-            _mServices = InstallServices();
-            string token = Utilities.GetKey("token");
-            await _mClient.LoginAsync(TokenType.Bot, token);
-            await _mClient.StartAsync();
-            await InstallCommands();
+        private DiscordSocketClient _client;
+        private CommandService _commands;
+        private IServiceProvider _services;
+
+        public async Task MainAsync()
+        {
+            var token = Utilities.GetKey("token");
+
+            _client = new DiscordSocketClient();
+
+            await _client.LoginAsync(TokenType.Bot, token);
+            await _client.StartAsync();
+
+            _services = new ServiceCollection()
+                .AddSingleton(_client)
+                .AddSingleton<InteractiveService>()
+                .BuildServiceProvider();
+
+            _commands = new CommandService();
+            await _commands.AddModulesAsync(Assembly.GetEntryAssembly());
+
+            _client.MessageReceived += HandleCommandAsync;
+            _client.Ready += Ready;
+            _client.Log += Log;
 
             await Task.Delay(-1);
         }
-        //        private async Task Client_Log(LogMessage Message)
-        //        {
-        //            Console.WriteLine($"{DateTime.Now} at {Message.Source}] {Message.Message}");
-        //        }
-        private async Task Ready()
+
+        public async Task HandleCommandAsync(SocketMessage m)
         {
-            Random ran = new Random();
-            string[] status = { "stndbild😡", "Kack Drecks Wissenschaftliche Arbeit Hurensohn", "Fuck auf die Hater, Hans ist da" };
-            await _mClient.SetGameAsync(status[ran.Next(status.Length)], "https://twitch.tv/m3iy0u");
-        }
-
-        private async Task MessageReceived(SocketMessage messageParam)
-        {
-            var message = messageParam as SocketUserMessage;
-            var context = new SocketCommandContext(_mClient, message);
-
-            if (context.Message == null || context.Message.Content == "") return;
-            if (context.User.IsBot) return;
-
+            if (!(m is SocketUserMessage msg)) return;
+            if (msg.Author.IsBot) return;
+            var message = (SocketUserMessage)m;
             int argPos = 0;
-            if (!(message.HasStringPrefix("&", ref argPos) || message.HasMentionPrefix(_mClient.CurrentUser, ref argPos))) return;
+            if (!(msg.HasStringPrefix("&", ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos))) return;
 
-            var result = await _mCommands.ExecuteAsync(context, argPos);
+            var context = new SocketCommandContext(_client, msg);
+            var result = await _commands.ExecuteAsync(context, argPos, _services);
             if (!result.IsSuccess)
-            {
-                Console.WriteLine($"{DateTime.Now} at Commands] Something went wrong with executing a command. Text: {context.Message.Content} | Error: {result.ErrorReason}");
                 await context.Channel.SendMessageAsync($"Something went wrong. Error: `{result.ErrorReason}`");
-            }
-        }
-
-        private Task Disconnected(Exception arg)
-        {
-            Console.WriteLine("Disconnected");
-            return Task.CompletedTask;
         }
 
         private async Task Log(LogMessage msg)
@@ -78,29 +62,11 @@ namespace Meiyounaise
             await Task.CompletedTask;
         }
 
-        private IServiceProvider InstallServices()
+        private async Task Ready()
         {
-            ServiceCollection services = new ServiceCollection();
-            // Add all additional services here.
-            // Return the service provider.
-            return services.BuildServiceProvider();
-        }
-
-        private async Task InstallCommands()
-        {
-            // Before we install commands, we should check if everything was set up properly. Check if logged in.
-            if (_mClient.LoginState != LoginState.LoggedIn) return;
-
-            // Hook the MessageReceived Event into our Command Handler
-            _mClient.MessageReceived += MessageReceived;
-
-            // Add tasks to send Messages
-            _mClient.Ready += Ready;
-            _mClient.Disconnected += Disconnected;
-            _mClient.Log += Log;
-
-            // Discover all of the commands in this assembly and load them.
-            await _mCommands.AddModulesAsync(Assembly.GetEntryAssembly());
+            Random ran = new Random();
+            string[] status = { "stndbild😡", "Kack Drecks Wissenschaftliche Arbeit Hurensohn", "Fuck auf die Hater, Hans ist da" };
+            await _client.SetGameAsync(status[ran.Next(status.Length)]);
         }
     }
 }

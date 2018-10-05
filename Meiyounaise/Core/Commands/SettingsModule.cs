@@ -5,10 +5,13 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using System.Net.Http;
+// ReSharper disable PossibleMultipleEnumeration
+// ReSharper disable PossibleNullReferenceException
 
 namespace Meiyounaise.Core.Commands
 {
-    public class Settings : ModuleBase<SocketCommandContext>
+    [Name("Bot Settings")]
+    public class SettingsModule : ModuleBase<SocketCommandContext>
     {
         public static async Task DownloadAsync(Uri requestUri, string filename)
         {
@@ -29,27 +32,27 @@ namespace Meiyounaise.Core.Commands
             }
         }
         //STATUS
-        [Command("status"), Summary("Changes the bots Game")]
+        [Command("status"), Summary("Changes the Bot's \"playing\" status.")]
         public async Task Status([Remainder]string ns)
         {
             await Context.Client.SetGameAsync(ns);
             await Task.CompletedTask;
-            await Context.Channel.SendMessageAsync("Status wurde geändert 👌");
+            await Context.Channel.SendMessageAsync("Status has been changed 👌");
         }
         //NICKNAME
-        [Command("nick", RunMode = RunMode.Async), Summary("Changes the Bots Nickname on the current guild")]
+        [Command("nick", RunMode = RunMode.Async), Summary("Changes the Bots Nickname on the current guild.")]
         public async Task Nick(string n)
         {
             var user = Context.Guild.GetUser(488112585640509442);
             await user.ModifyAsync(x => { x.Nickname = n; });
         }
         //BOT ICON
-        [Command("icon", RunMode = RunMode.Async), Summary("Changes the Bots avatar. Bot Owner only")]
+        [Command("icon", RunMode = RunMode.Async), Summary("Changes the Bots avatar.")]
         public async Task Icon(string url = "")
         {
             var lm = await Context.Channel.GetMessagesAsync(2).Flatten();
             var message = lm.Last(); //GET LAST MESSAGE
-            var path = Utilities.dataPath + "icon.png";
+            var path = Utilities.DataPath + "icon.png";
             try
             {
                 string durl;
@@ -78,7 +81,7 @@ namespace Meiyounaise.Core.Commands
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 await DownloadAsync(new Uri(durl), path);
-                var avatar = new FileStream(Utilities.dataPath + "icon.png", FileMode.Open);
+                var avatar = new FileStream(Utilities.DataPath + "icon.png", FileMode.Open);
                 try
                 {
                     await (Context.Client.CurrentUser).ModifyAsync(x => x.Avatar = new Image(avatar));

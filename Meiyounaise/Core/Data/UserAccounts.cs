@@ -8,7 +8,7 @@ namespace Meiyounaise.Core.Data
     {
         private static List<UserAccount> accounts;
 
-        private static readonly string AccountsFile = Utilities.dataPath + "accounts.json";
+        private static readonly string AccountsFile = Utilities.DataPath + "accounts.json";
         static UserAccounts()
         {
             if (DataStorage.SaveExists(AccountsFile))

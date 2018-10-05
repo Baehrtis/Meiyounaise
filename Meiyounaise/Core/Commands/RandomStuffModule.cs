@@ -1,41 +1,21 @@
 ﻿using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using Urban.NET;
+using Discord.Addons.Interactive;
 
 namespace Meiyounaise.Core.Commands
 {
-    public class Random : ModuleBase<SocketCommandContext>
+    [Name("Random Stuff")]
+    public class RandomStuffModule : InteractiveBase
     {
-        //DMAU
-        [Command("unnerum"), Summary("ok")]
-        public async Task AberUnneRumTask([Remainder] string input = "")
-        {
-            string input2 = input;
-            if (input == "")
-            {
-                var message = await Context.Channel.GetMessagesAsync(2).Flatten();
-                input2 = message.Last().Content;
-            }
-
-            string result = "**";
-            for (int i = 1; i <= input2.Length; i += 2)
-            {
-                input2 = input2.Insert(i, " ");
-            }
-
-            input2 = input2.ToUpper();
-            result += "D E I N E  M U T T E R  " + input2 + ",  A B E R   U N N E R U M" + "**";
-            await ReplyAsync(result);
-        }
-
         //EMOTE
-        [Command("e")]
+        [Command("e"),Summary("Enlarges the provided Emote.")]
         public async Task Emote(string input)
         {
             var emote = Discord.Emote.Parse(input);
@@ -43,20 +23,23 @@ namespace Meiyounaise.Core.Commands
         }
 
         //PING
-        [Command("ping"), Summary("Returns Latency")]
+        [Command("ping"), Summary("Returns the Bot's Latencies.")]
         public async Task Ping()
         {
+            Stopwatch stopwatch = new Stopwatch();
             var temp = await Context.Channel.SendMessageAsync("Ping...");
+            stopwatch.Start();
             EmbedBuilder embed = new EmbedBuilder()
                 .WithColor(0, 0, 0)
-                .WithDescription("Pong!")
-                .AddInlineField($"Latency", $"{(temp.CreatedAt - Context.Message.CreatedAt).Milliseconds}ms")
                 .AddInlineField($"API-Latency", $"{Context.Client.Latency}ms");
+            await temp.ModifyAsync(msg => msg.Content = "Pong!");
+            stopwatch.Stop();
+            embed.AddInlineField($"Latency", $"{stopwatch.Elapsed.Milliseconds}ms");
             await temp.ModifyAsync(msg => msg.Embed = embed.Build());
         }
 
         //CLAP
-        [Command("clap"), Alias("klatsch"), Summary("Insert first word between all others")]
+        [Command("clap"), Alias("klatsch"), Summary("Insert first word between all others.")]
         public async Task Clap(string toIns, [Remainder] string text)
         {
             string result = text.Replace(" ", $" {toIns} ");
@@ -68,12 +51,12 @@ namespace Meiyounaise.Core.Commands
         public async Task Avatar(string name)
         {
             var user = Context.Message.MentionedUsers.FirstOrDefault();
-            string url = user?.GetAvatarUrl();
+            var url = user?.GetAvatarUrl();
             await ReplyAsync($"{user?.Username}'s Avatar is: {url?.Replace("size=128", "size=1024")}");
         }
 
         //QUOTE
-        [Command("quote"), Summary("Quote people via a message id")]
+        [Command("quote"), Summary("Quote people via a message id.")]
         public async Task Quote(ulong id)
         {
             var toQuote = await Context.Channel.GetMessageAsync(id);
@@ -128,7 +111,7 @@ namespace Meiyounaise.Core.Commands
         }
 
         //REGIONAL INDICATOR
-        [Command("ri")]
+        [Command("ri"),Summary("Returns the text you provided in regional indicators.")]
         public async Task RegionalIndicator([Remainder] string input)
         {
             string result = input.ToLower();
@@ -148,58 +131,44 @@ namespace Meiyounaise.Core.Commands
             }
         }
 
-        //UD
-        [Command("ud")]
+        //URBAN DICTIONARY
+        [Command("ud"),Summary("Gives you the definition of your word on Urban Dictionary.")]
         public async Task UrbanDictionary([Remainder] string word)
         {
             UrbanService client = new UrbanService();
             var data = await client.Data(word);
-            string def = data.List.First().Definition.Replace("[", "");
-            def = def.Replace("]", "");
-            var embed = new EmbedBuilder()
-                .WithColor(200, 200, 0)
-                .WithTitle(data.List.First().Word)
-                .WithUrl(data.List.First().Permalink)
-                .WithDescription(def)
-                .AddInlineField("Rating", $"👍{data.List.First().ThumbsUp}\t👎{data.List.First().ThumbsDown}");
-
-            await ReplyAsync($"Top Definition for {data.List.First().Word}:", false, embed.Build());
+            var pages = new List<string>();
+            var pm = new PaginatedMessage();
+            pm.Color = new Color(200, 200, 0);
+            foreach (var entry in data.List)
+            {
+                string result = $"[{entry.Word}]({entry.Permalink})\n\n";
+                string def = entry.Definition.Replace("[", "");
+                result += def.Replace("]", "");
+                result += $"\n\n👍{entry.ThumbsUp}\t👎{entry.ThumbsDown}";
+                pages.Add(result);
+            }
+            pm.Pages = pages;
+            await PagedReplyAsync(pm);
+            await Context.Message.DeleteAsync();
         }
 
-        //SCREENSHOT
-        [Command("ss")]
-        public async Task ScreenShot(string url)
+        //TWITCH FOLLOWING
+        [Command("followage"),Alias("following"),Summary("Returns how long you've been following a specified streamer.")]
+        public async Task Following(string user, string channel)
         {
-            string utd = $"https://api.thumbnail.ws/api/{Utilities.GetKey("sskey")}/thumbnail/get?url={url}&width=1000";
-            var om = await Context.Channel.SendMessageAsync("Ok, this could take a little bit!");
-            var typing = Context.Channel.EnterTypingState();
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            try
+            var url = $"https://2g.be/twitch/following.php?user={user}&channel={channel}";
+            string result;
+            HttpClientHandler handler = new HttpClientHandler();
+            using (var httpClient = new HttpClient(handler, false))
             {
-                HttpClientHandler handler = new HttpClientHandler();
-                using (var httpClient = new HttpClient(handler, false))
+                using (var request = new HttpRequestMessage(HttpMethod.Get, url))
                 {
-                    using (var request = new HttpRequestMessage(HttpMethod.Get, utd))
-                    {
-                        using (
-                            Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),
-                            stream = new FileStream(Utilities.dataPath + "ss.jpg", FileMode.Create, FileAccess.Write,
-                                FileShare.None, 4096, true))
-                        {
-                            await contentStream.CopyToAsync(stream);
-                        }
-                    }
+                    var reponse = await httpClient.SendAsync(request);
+                    result = await reponse.Content.ReadAsStringAsync();
                 }
             }
-            catch (Exception e)
-            {
-                await ReplyAsync(e.Message);
-            }
-            typing.Dispose();
-            var reply = await Context.Channel.SendFileAsync(Utilities.dataPath + "ss.jpg");
-            await om.ModifyAsync(x => x.Content = $"⏲ Took {(reply.CreatedAt.Millisecond - om.CreatedAt.Millisecond)} milliseconds!");
-            File.Delete(Utilities.dataPath + "ss.jpg");
+            await ReplyAsync(result);
         }
     }
 }
