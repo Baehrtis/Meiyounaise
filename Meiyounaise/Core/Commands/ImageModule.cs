@@ -35,6 +35,12 @@ namespace Meiyounaise.Core.Commands
         {
             await Context.Channel.SendFileAsync(Utilities.DataPath + "despacito.png");
         }
+        [Command("fuckingshit"),Summary("Fucking shit")]
+        [RequireBotPermission(ChannelPermission.AttachFiles)]
+        public async Task Fuckingshit()
+        {
+            await Context.Channel.SendFileAsync(Utilities.DataPath + "fuckingshit.jpg");
+        }
 
         //EMOTION
         [Command("emotion")]
