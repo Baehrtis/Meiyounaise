@@ -65,7 +65,7 @@ namespace Meiyounaise
         private async Task Ready()
         {
             Random ran = new Random();
-            string[] status = { "stndbild😡", "Kack Drecks Wissenschaftliche Arbeit Hurensohn", "Fuck auf die Hater, Hans ist da" };
+            string[] status = { "stndbild😡", "Kack Drecks Wissenschaftliche Arbeit Hurensohn", "Fuck auf die Hater, Hans ist da", "thema meiyou naise" };
             await _client.SetGameAsync(status[ran.Next(status.Length)]);
         }
     }

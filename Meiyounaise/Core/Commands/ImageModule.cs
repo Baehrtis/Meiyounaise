@@ -18,17 +18,20 @@ namespace Meiyounaise.Core.Commands
     {
         //PICTURES
         [Command("angefahren"),Summary("Ich hoffe du wirst ehrenlos angefahren.")]
+        [RequireBotPermission(ChannelPermission.AttachFiles)]
         public async Task Angefahren()
         {
             await Context.Channel.SendFileAsync(Utilities.DataPath + "bastard.jpg");
         }
         [Command("blod"),Summary("Bist du blöd?")]
+        [RequireBotPermission(ChannelPermission.AttachFiles)]
         public async Task Blod()
         {
             await Context.Channel.SendFileAsync(Utilities.DataPath + "blod.png");
         }
         [Command("despacito"),Summary("Despacito like wers kennt.")]
-        public async Task Blod()
+        [RequireBotPermission(ChannelPermission.AttachFiles)]
+        public async Task Despacito()
         {
             await Context.Channel.SendFileAsync(Utilities.DataPath + "despacito.png");
         }
