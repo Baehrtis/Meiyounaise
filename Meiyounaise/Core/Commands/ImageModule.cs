@@ -23,6 +23,7 @@ namespace Meiyounaise.Core.Commands
             await Context.Channel.SendFileAsync(Utilities.DataPath + "bastard.jpg");
         }
         [Command("blod"),Summary("Sends a picture.")]
+        [RequireBotPermission(ChannelPermission.AttachFiles)]
         public async Task Blod()
         {
             await Context.Channel.SendFileAsync(Utilities.DataPath + "blod.png");
