@@ -17,15 +17,20 @@ namespace Meiyounaise.Core.Commands
     public class ImageModule : ModuleBase<SocketCommandContext>
     {
         //PICTURES
-        [Command("angefahren"),Summary("Sends a picture.")]
+        [Command("angefahren"),Summary("Ich hoffe du wirst ehrenlos angefahren.")]
         public async Task Angefahren()
         {
             await Context.Channel.SendFileAsync(Utilities.DataPath + "bastard.jpg");
         }
-        [Command("blod"),Summary("Sends a picture.")]
+        [Command("blod"),Summary("Bist du blöd?")]
         public async Task Blod()
         {
             await Context.Channel.SendFileAsync(Utilities.DataPath + "blod.png");
+        }
+        [Command("despacito"),Summary("Despacito like wers kennt.")]
+        public async Task Blod()
+        {
+            await Context.Channel.SendFileAsync(Utilities.DataPath + "despacito.png");
         }
 
         //EMOTION
