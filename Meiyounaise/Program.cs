@@ -6,6 +6,7 @@ using Discord.WebSocket;
 using Microsoft.Extensions.DependencyInjection;
 using Discord.Addons.Interactive;
 using System.Reflection;
+using Meiyounaise.Core;
 
 namespace Meiyounaise
 {
@@ -26,10 +27,10 @@ namespace Meiyounaise
 
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
-
             _services = new ServiceCollection()
                 .AddSingleton(_client)
                 .AddSingleton<InteractiveService>()
+                .AddSingleton<AntiSpamService>()
                 .BuildServiceProvider();
 
             _commands = new CommandService();
@@ -42,15 +43,25 @@ namespace Meiyounaise
             await Task.Delay(-1);
         }
 
+
         public async Task HandleCommandAsync(SocketMessage m)
         {
             if (!(m is SocketUserMessage msg)) return;
             if (msg.Author.IsBot) return;
+            
             var message = (SocketUserMessage)m;
             int argPos = 0;
             if (!(msg.HasStringPrefix("&", ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos))) return;
 
             var context = new SocketCommandContext(_client, msg);
+            if (AntiSpamService.ContainsUser(m.Author.Id))
+            {
+                await context.Channel.SendMessageAsync(
+                    $"**{context.Message.Author.Username + "#" + context.Message.Author.Discriminator}:** No Spammerino in the Chatterino\n(Please wait another {AntiSpamService.GetTimeForUser(m.Author.Id).Seconds}.{AntiSpamService.GetTimeForUser(m.Author.Id).Milliseconds}s)");
+                return;
+            }
+
+            AntiSpamService.RateLimitUser(m);
             var result = await _commands.ExecuteAsync(context, argPos, _services);
             if (!result.IsSuccess)
                 await context.Channel.SendMessageAsync($"Something went wrong. Error: `{result.ErrorReason}`");
