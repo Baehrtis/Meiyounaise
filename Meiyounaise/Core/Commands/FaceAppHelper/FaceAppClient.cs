@@ -1,15 +1,13 @@
-﻿using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Linq;
 
-namespace FaceApp
+namespace Meiyounaise.Core.Commands.FaceAppHelper
 {
     public class FaceAppClient
     {
@@ -17,10 +15,10 @@ namespace FaceApp
         private const string UserAgent = "FaceApp/1.0.229 (Linux; Android 4.4)";
         private const int IdLength = 8;
 
-        private string _deviceId;
-        private HttpClient _client;
+        private readonly string _deviceId;
+        private readonly HttpClient _client;
 
-        private readonly ImmutableArray<FilterType> ProFilters = ImmutableArray.Create(
+        private readonly ImmutableArray<FilterType> _proFilters = ImmutableArray.Create(
         
             FilterType.Bangs,
             FilterType.Female,
@@ -45,19 +43,20 @@ namespace FaceApp
             _client = client;
             _deviceId = GenerateDeviceId();
         }
-       
+
         /// <summary>
         /// Applies the filter type provided using the image code.
         /// </summary>
         /// <param name="code"></param>
         /// Image code provided by the API.
         /// <param name="filter"></param>
+        /// <param name="ct"></param>
         /// Type of filter to be applied.
         /// <returns></returns>
         public async Task<Stream> ApplyFilterAsync(string code, FilterType filter, CancellationToken ct = default(CancellationToken))
         {
-            bool cropped = false;
-            if (ProFilters.Any(x => x == filter))
+            var cropped = false;
+            if (_proFilters.Any(x => x == filter))
                 cropped = true;
             var reqUrl = $"{BaseUrl}/{code}/filters/{filter.ToString().ToLower()}?cropped={cropped}";
             var request = new HttpRequestMessage(HttpMethod.Get, reqUrl);
@@ -80,6 +79,7 @@ namespace FaceApp
         /// Retrieves the image code from the image's url.
         /// </summary>
         /// <param name="uri"></param>
+        /// <param name="ct"></param>
         /// The valid uri of the image.
         /// <returns></returns>
         public async Task<string> GetCodeAsync(Uri uri, CancellationToken ct = default(CancellationToken))
@@ -105,41 +105,6 @@ namespace FaceApp
                     throw exp;
                 }
                 return JObject.Parse(jsonStr)["code"].ToString();              
-            }
-        }
-
-        /// <summary>
-        /// Retrieves the image code from the image's path.
-        /// </summary>
-        /// <param name="path"></param>
-        /// Valid path of the file.
-        /// <returns></returns>
-        public async Task<string> GetCodeAsync(string path, CancellationToken ct = default(CancellationToken))
-        {
-            if (!File.Exists(path))
-                throw new FileNotFoundException("The file specified was not found.");
-            using (var imageStream = File.Open(path, FileMode.Open))
-            {
-                var request = new HttpRequestMessage(HttpMethod.Post, BaseUrl);
-                request.Headers.Add("User-Agent", UserAgent);
-                request.Headers.Add("X-FaceApp-DeviceID", _deviceId);
-                var fileName = Path.GetFileName(path);
-                var streamContent = new StreamContent(imageStream);
-                var mutipartContent = new MultipartFormDataContent();
-                mutipartContent.Add(streamContent, "file", fileName);
-                request.Content = mutipartContent;
-                ct.ThrowIfCancellationRequested();
-                var response = await _client.SendAsync(request, ct).ConfigureAwait(false);
-                var jsonStr = await response.Content.ReadAsStringAsync();
-                if (!response.IsSuccessStatusCode)
-                {
-                    string errorCode = null;
-                    if (response.Headers.TryGetValues("X-FaceApp-ErrorCode", out var codes))
-                        errorCode = codes.First();
-                    var exp = HandleException(errorCode);
-                    throw exp;
-                }
-                return JObject.Parse(jsonStr)["code"].ToString();
             }
         }
 

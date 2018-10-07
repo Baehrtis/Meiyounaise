@@ -23,6 +23,7 @@ namespace Meiyounaise.Core.Commands
         //STEAM
         [Command("steam")]
         [Summary("Returns information about a steam user.")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         public async Task SteamTask(ulong id)
         {
             _sInterface = new SteamUser(Key);
@@ -36,6 +37,7 @@ namespace Meiyounaise.Core.Commands
 
         [Command("game"), Alias("sg", "g")]
         [Summary("Returns information about a game on steam.")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         public async Task Game([Remainder]string name)
         {
             string price = "F2P";
@@ -108,6 +110,7 @@ namespace Meiyounaise.Core.Commands
         //WOLFRAM ALPHA
         [Command("wa")]
         [Summary("Evaluates your query with Wolfram Alpha and returns the result.")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         public async Task WolframTask([Remainder]string input)
         {
             var client = new WAEngine {APIKey = Utilities.GetKey("wolframkey")};
@@ -151,6 +154,7 @@ namespace Meiyounaise.Core.Commands
         //MONEY
         [Command("money")]
         [Summary("Convert money into another currency.")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         public async Task FixerTask(double input, string from, string to = Symbols.EUR)
         {
             Fixer.SetApiKey(Utilities.GetKey("fixerkey"));
@@ -389,7 +393,6 @@ namespace Meiyounaise.Core.Commands
                 }
                 await ReplyAsync("", false, BuildPublicEmbed(id));
             }
-
         }
     }
 }

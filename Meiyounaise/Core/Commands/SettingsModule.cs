@@ -41,6 +41,7 @@ namespace Meiyounaise.Core.Commands
         }
         //NICKNAME
         [Command("nick", RunMode = RunMode.Async), Summary("Changes the Bots Nickname on the current guild.")]
+        [RequireBotPermission(GuildPermission.ChangeNickname)]
         public async Task Nick(string n)
         {
             var user = Context.Guild.GetUser(488112585640509442);
@@ -55,29 +56,7 @@ namespace Meiyounaise.Core.Commands
             var path = Utilities.DataPath + "icon.png";
             try
             {
-                string durl;
-                if (Context.Message.Attachments.Count != 0)//CURRENT MESSAGE HAS ATTACHMENT
-                {
-                    durl = Context.Message.Attachments.FirstOrDefault()?.Url;
-                }
-                else//CURRENT MESSAGE DOES NOT HAVE ATTACHMENT
-                {
-                    if (url != "")//IMAGE URL PROVIDED
-                    {
-                        durl = url;
-                    }
-                    else//NO IMAGE URL PROVIDED
-                    {
-                        if (message.Attachments.Count != 0)
-                        {
-                            durl = message.Attachments.FirstOrDefault()?.Url;
-                        }
-                        else
-                        {
-                            durl = message.Content;
-                        }
-                    }
-                }
+                var durl = Utilities.GetImageFromCurrentOrLastMessage(url, message, Context);
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
                 await DownloadAsync(new Uri(durl), path);
@@ -93,7 +72,6 @@ namespace Meiyounaise.Core.Commands
                     await ReplyAsync(e.Message);
                     throw;
                 }
-               
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
             }

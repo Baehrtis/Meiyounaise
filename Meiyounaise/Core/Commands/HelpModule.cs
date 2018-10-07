@@ -20,6 +20,7 @@ namespace Meiyounaise.Core.Commands
         }
 
         [Command("help")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         public async Task HelpAsync()
         {
             var pages = new List<string>();
@@ -54,12 +55,12 @@ namespace Meiyounaise.Core.Commands
                 Pages = pages,
                 Author = new EmbedAuthorBuilder() { Name = Context.User.Username, IconUrl = Context.User.GetAvatarUrl() },
                 Title = $"Commands | Prefix is & or {Context.User.Mention}"
-
             };
             await PagedReplyAsync(msg);
         }
 
         [Command("help")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         [Summary("Search for a specific command.")]
         public async Task HelpAsync(string command)
         {

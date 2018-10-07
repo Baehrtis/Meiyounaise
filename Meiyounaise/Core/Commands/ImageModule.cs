@@ -7,7 +7,7 @@ using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using FaceApp;
+using Meiyounaise.Core.Commands.FaceAppHelper;
 using Newtonsoft.Json.Linq;
 // ReSharper disable StringIndexOfIsCultureSpecific.1
 
@@ -50,28 +50,7 @@ namespace Meiyounaise.Core.Commands
             string key = Utilities.GetKey("emotionkey");
             var lm = await Context.Channel.GetMessagesAsync(2).Flatten();
             var message = lm.Last(); //GET LAST MESSAGE
-            if (Context.Message.Attachments.Count != 0)//CURRENT MESSAGE HAS ATTACHMENT
-            {
-                url = Context.Message.Attachments.FirstOrDefault()?.Url;
-            }
-            else//CURRENT MESSAGE DOES NOT HAVE ATTACHMENT
-            {
-                if (url != "")//IMAGE URL PROVIDED
-                {
-                    //do nothing
-                }
-                else//NO IMAGE URL PROVIDED
-                {
-                    if (message.Attachments.Count != 0)
-                    {
-                        url = message.Attachments.FirstOrDefault()?.Url;
-                    }
-                    else
-                    {
-                        url = message.Content;
-                    }
-                }
-            }
+            url = Utilities.GetImageFromCurrentOrLastMessage(url, message, Context);
             GC.Collect();
             GC.WaitForPendingFinalizers();
             bool cont = true;
@@ -166,6 +145,7 @@ namespace Meiyounaise.Core.Commands
 
         //SCREENSHOT
         [Command("ss"), Summary("Screenshots a Website for you.")]
+        [RequireBotPermission(ChannelPermission.AttachFiles)]
         public async Task ScreenShot(string url)
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -223,30 +203,8 @@ namespace Meiyounaise.Core.Commands
                 FaceAppClient faceAppClient = new FaceAppClient(new HttpClient());
                 var lm = await Context.Channel.GetMessagesAsync(2).Flatten();
                 var message = lm.Last(); //GET LAST MESSAGE
-                string durl;
-                if (Context.Message.Attachments.Count != 0) //CURRENT MESSAGE HAS ATTACHMENT
-                {
-                    durl = Context.Message.Attachments.FirstOrDefault()?.Url;
-                }
-                else //CURRENT MESSAGE DOES NOT HAVE ATTACHMENT
-                {
-                    if (url != "") //IMAGE URL PROVIDED
-                    {
-                        durl = url;
-                    }
-                    else //NO IMAGE URL PROVIDED
-                    {
-                        if (message.Attachments.Count != 0)
-                        {
-                            durl = message.Attachments.FirstOrDefault()?.Url;
-                        }
-                        else
-                        {
-                            durl = message.Content;
-                        }
-                    }
-                }
-
+                string durl = Utilities.GetImageFromCurrentOrLastMessage(url,message,Context as SocketCommandContext);
+                
                 if (Uri.TryCreate(durl, UriKind.Absolute, out Uri uri))
                 {
                     try
@@ -273,126 +231,147 @@ namespace Meiyounaise.Core.Commands
             }
 
             [Command("old")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Old(string url = "")
             {
                 await FaceApp(FilterType.Old, url);
             }
 
             [Command("smile")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Smile(string url = "")
             {
                 await FaceApp(FilterType.Smile, url);
             }
 
             [Command("smile_2")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Smile_2(string url = "")
             {
                 await FaceApp(FilterType.Smile_2, url);
             }
 
             [Command("young")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Young(string url = "")
             {
                 await FaceApp(FilterType.Young, url);
             }
 
             [Command("hot")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Hot(string url = "")
             {
                 await FaceApp(FilterType.Hot, url);
             }
 
             [Command("female")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Female(string url = "")
             {
                 await FaceApp(FilterType.Female, url);
             }
 
             [Command("female_2")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Female_2(string url = "")
             {
                 await FaceApp(FilterType.Female_2, url);
             }
 
             [Command("pan")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Pan(string url = "")
             {
                 await FaceApp(FilterType.Pan, url);
             }
 
             [Command("male")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Male(string url = "")
             {
                 await FaceApp(FilterType.Male, url);
             }
 
             [Command("glasses")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Glasses(string url = "")
             {
                 await FaceApp(FilterType.Glasses, url);
             }
 
             [Command("hollywood")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Holly(string url = "")
             {
                 await FaceApp(FilterType.Hollywood, url);
             }
 
             [Command("goatee")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Goatee(string url = "")
             {
                 await FaceApp(FilterType.Goatee, url);
             }
 
             [Command("impression")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Impression(string url = "")
             {
                 await FaceApp(FilterType.Impression, url);
             }
 
             [Command("heisenberg")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Heisen(string url = "")
             {
                 await FaceApp(FilterType.Heisenberg, url);
             }
 
             [Command("hitman")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Hitman(string url = "")
             {
                 await FaceApp(FilterType.Hitman, url);
             }
 
             [Command("bangs")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Bangs(string url = "")
             {
                 await FaceApp(FilterType.Bangs, url);
             }
 
             [Command("wave")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Wave(string url = "")
             {
                 await FaceApp(FilterType.Wave, url);
             }
 
             [Command("makeup")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Makeup(string url = "")
             {
                 await FaceApp(FilterType.Makeup, url);
             }
 
             [Command("mustache")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Mustache(string url = "")
             {
                 await FaceApp(FilterType.Mustache, url);
             }
 
             [Command("lion")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Lion(string url = "")
             {
                 await FaceApp(FilterType.Lion, url);
             }
 
             [Command("hipster")]
+            [RequireBotPermission(ChannelPermission.AttachFiles)]
             public async Task Hipster(string url = "")
             {
                 await FaceApp(FilterType.Hipster, url);

@@ -15,6 +15,7 @@ namespace Meiyounaise.Core.Commands
     {
         [Command("play", RunMode = RunMode.Async)]
         [Summary("Play a sound.")]
+        [RequireBotPermission(GuildPermission.Speak)]
         public async Task PlayTask(string name = "")
         {
             if (name == "")

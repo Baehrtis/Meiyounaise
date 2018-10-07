@@ -24,6 +24,7 @@ namespace Meiyounaise.Core.Commands
 
         //PING
         [Command("ping"), Summary("Returns the Bot's Latencies.")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         public async Task Ping()
         {
             Stopwatch stopwatch = new Stopwatch();
@@ -57,6 +58,7 @@ namespace Meiyounaise.Core.Commands
 
         //QUOTE
         [Command("quote"), Summary("Quote people via a message id.")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         public async Task Quote(ulong id)
         {
             var toQuote = await Context.Channel.GetMessageAsync(id);
@@ -133,6 +135,7 @@ namespace Meiyounaise.Core.Commands
 
         //URBAN DICTIONARY
         [Command("ud"),Summary("Gives you the definition of your word on Urban Dictionary.")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         public async Task UrbanDictionary([Remainder] string word)
         {
             UrbanService client = new UrbanService();
@@ -159,7 +162,7 @@ namespace Meiyounaise.Core.Commands
         {
             var url = $"https://2g.be/twitch/following.php?user={user}&channel={channel}";
             string result;
-            HttpClientHandler handler = new HttpClientHandler();
+            var handler = new HttpClientHandler();
             using (var httpClient = new HttpClient(handler, false))
             {
                 using (var request = new HttpRequestMessage(HttpMethod.Get, url))

@@ -14,6 +14,7 @@ namespace Meiyounaise.Core.Commands
         [Command("purge", RunMode = RunMode.Async), Alias("prune")]
         [Summary("Bulk delete messages.")]
         [RequireUserPermission(GuildPermission.ManageMessages)]
+        [RequireBotPermission(GuildPermission.ManageMessages)]
         public async Task PurgeTask(int amount)
         {
             try

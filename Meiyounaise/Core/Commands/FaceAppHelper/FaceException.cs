@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace FaceApp
+namespace Meiyounaise.Core.Commands.FaceAppHelper
 {
     public class FaceException : Exception
     {
@@ -10,7 +8,7 @@ namespace FaceApp
 
         public FaceException(ExceptionType type, string message) : base(message)
         {
-            this.Type = type;
+            Type = type;
         }
 
         public override string ToString()

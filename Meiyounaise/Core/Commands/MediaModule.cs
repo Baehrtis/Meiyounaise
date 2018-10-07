@@ -79,6 +79,7 @@ namespace Meiyounaise.Core.Commands
         //MOVIES
         [Command("movie")]
         [Summary("Search TMDb for a speficied movie.")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         public async Task Movie([Remainder] string title)
         {
             TMDbLib.Objects.Movies.Movie movie;
@@ -124,7 +125,11 @@ namespace Meiyounaise.Core.Commands
         {
             if (cmd.ToLower() == "set")
             {
-                if (username == "") { await ReplyAsync("I need a Name that I can link to your account!"); return; }
+                if (username == "")
+                {
+                    await ReplyAsync("I need a Name that I can link to your account!");
+                    return;
+                }
                 var account = UserAccounts.GetAccount(Context.User);
                 account.Last = username;
                 UserAccounts.SaveAccounts();
@@ -155,6 +160,7 @@ namespace Meiyounaise.Core.Commands
 
         [Command("fm")]
         [Summary("Get your currently scrobbling or last played Track.")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         public async Task Last()
         {
             var name = UserAccounts.GetAccount(Context.User).Last;
@@ -188,6 +194,7 @@ namespace Meiyounaise.Core.Commands
 
         [Command("recommend")]
         [Summary("Recommends 3 Artists similiar to your Top 3 Artists within a given Timespan.")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         public async Task Recommend(string timespan = "")
         {
             string tss;
@@ -231,8 +238,7 @@ namespace Meiyounaise.Core.Commands
                 await ReplyAsync("I have no Last.fm Username set for you! Set it using `&fm set [Name]`!");
                 return;
             }
-
-
+            
             var artists = await Client.User.GetTopArtists(name, ts, 1, 3);
             var embed = new EmbedBuilder().WithColor(255,0,0).WithDescription($"Timespan: {tss}");
             embed.WithAuthor(author =>
@@ -258,6 +264,7 @@ namespace Meiyounaise.Core.Commands
 
         [Command("charts")]
         [Summary("Returns the current Global Top 25 Charts.")]
+        [RequireBotPermission(ChannelPermission.EmbedLinks)]
         public async Task Charts()
         {
             ClientCredentialsAuth auth = new ClientCredentialsAuth()
