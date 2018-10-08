@@ -43,7 +43,6 @@ namespace Meiyounaise
             await Task.Delay(-1);
         }
 
-
         public async Task HandleCommandAsync(SocketMessage m)
         {
             if (!(m is SocketUserMessage msg)) return;

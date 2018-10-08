@@ -169,7 +169,7 @@ namespace Meiyounaise.Core.Commands
                 await ReplyAsync("I have no Last.fm Username set for you! Set it using `&fm set [Name]`!");
                 return;
             }
-            
+
             var response = await Client.User.GetRecentScrobbles(name);
             var count = Client.User.GetInfoAsync(name).Result.Content.Playcount.ToString();
             string isplaying = "Last Track";
@@ -238,9 +238,9 @@ namespace Meiyounaise.Core.Commands
                 await ReplyAsync("I have no Last.fm Username set for you! Set it using `&fm set [Name]`!");
                 return;
             }
-            
+
             var artists = await Client.User.GetTopArtists(name, ts, 1, 3);
-            var embed = new EmbedBuilder().WithColor(255,0,0).WithDescription($"Timespan: {tss}");
+            var embed = new EmbedBuilder().WithColor(255, 0, 0).WithDescription($"Timespan: {tss}");
             embed.WithAuthor(author =>
             {
                 author
@@ -259,7 +259,7 @@ namespace Meiyounaise.Core.Commands
 
                 embed.AddField($"Based on {artist.Name}", string.Join("\n", result));
             }
-            await ReplyAsync("",false,embed.Build());
+            await ReplyAsync("", false, embed.Build());
         }
 
         [Command("charts")]
@@ -281,8 +281,8 @@ namespace Meiyounaise.Core.Commands
                 AccessToken = token.AccessToken,
                 UseAuth = true
             };
-            
-            var playlist = spotify.GetPlaylistTracks("spotifycharts", "37i9dQZEVXbMDoHDwVN2tF","",25);
+
+            var playlist = spotify.GetPlaylistTracks("spotifycharts", "37i9dQZEVXbMDoHDwVN2tF", "", 25);
             int i = 1;
             var embed = new EmbedBuilder()
                 .WithAuthor(author =>
@@ -295,20 +295,16 @@ namespace Meiyounaise.Core.Commands
                 .WithColor(29, 185, 84);
             foreach (var entry in playlist.Items)
             {
-                string artists = entry.Track.Artists.First().Name;
-                if (entry.Track.Artists.Count > 1)
+                var artistList = new List<string>();
+                foreach (var artist in entry.Track.Artists)
                 {
-                    artists = "";
-                    foreach (var artist in entry.Track.Artists)
-                    {
-                        artists += $"{artist.Name}, ";
-                    }
-                    artists = artists.Remove(artists.Length - 2);
+                    artistList.Add(artist.Name);
                 }
+                var artists = string.Join(", ", artistList);
                 embed.AddField($"#{i} {entry.Track.Name}", $"[by {artists}]({entry.Track.ExternUrls.First().Value})");
                 i++;
             }
-            await ReplyAsync("",false,embed.Build());
+            await ReplyAsync("", false, embed.Build());
         }
     }
 }

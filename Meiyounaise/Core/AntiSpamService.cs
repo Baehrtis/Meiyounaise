@@ -44,29 +44,27 @@ namespace Meiyounaise.Core
                     temp = user.Key;
                 }
             }
-
             if (temp == null)
             {
                 return TimeSpan.Zero;
             }
             return Users[temp] - DateTime.Now;
         }
-    }
-
-    public class User
-    {
-        public ulong Id;
-        public Timer Timer;
-        public event Action<User> Timeout;
-
-        public User(ulong id)
+        public class User
         {
-            Id = id;
-            Timer = new Timer(timeoutHandler,null,2500,0);
-        }
-        public void timeoutHandler(object data)
-        {
-            Timeout?.Invoke(this);
+            public ulong Id;
+            public Timer Timer;
+            public event Action<User> Timeout;
+
+            public User(ulong id)
+            {
+                Id = id;
+                Timer = new Timer(timeoutHandler, null, 2500, 0);
+            }
+            public void timeoutHandler(object data)
+            {
+                Timeout?.Invoke(this);
+            }
         }
     }
 }
