@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Discord;
@@ -63,13 +64,55 @@ namespace Meiyounaise.Core.Commands
             {
                 await Context.Message.AddReactionAsync(new Emoji("❌"));
                 return;
-            } 
+            }
 
             var originalChannel = toMove.VoiceChannel as SocketVoiceChannel;
             await toMove.ModifyAsync(x => x.Channel = channelToMoveTo);
             await Context.Message.AddReactionAsync(new Emoji("✅"));
             await Task.Delay(5000);
             await toMove.ModifyAsync(x => x.Channel = originalChannel);
+        }
+
+        [Command("say", RunMode = RunMode.Async)]
+        [RequireOwner]
+        public async Task Say([Remainder]string text)
+        {
+            var guilds = new Dictionary<int, SocketGuild>();
+            var i = 1;
+            foreach (var guild in Context.Client.Guilds)
+            {
+                guilds.TryAdd(i, guild);
+                i++;
+            }
+            await ReplyAsync($"Found Guilds\n{string.Join("\n", guilds)}\nChoose one via the number!");
+            var gResponse = await NextMessageAsync();
+            if (gResponse == null)
+            {
+                await ReplyAsync("I didn't get your choice!");
+                return;
+            }
+            var target = guilds[Convert.ToInt32(gResponse.Content)];
+            var channels = new Dictionary<int, SocketTextChannel>();
+            var j = 1;
+            foreach (var channel in target.TextChannels)
+            {
+                channels.TryAdd(j, channel);
+                j++;
+            }
+            await ReplyAsync($"Listing text channels in guild {target.Name}\n{string.Join("\n", channels)}\nChoose one via the number!");
+            var cResponse = await NextMessageAsync();
+            var targetChannel = channels[Convert.ToInt32(cResponse.Content)];
+            await targetChannel.SendMessageAsync(text);
+            var messages = await Context.Channel.GetMessagesAsync(4).Flatten();
+            try
+            {
+                await Context.Channel.DeleteMessagesAsync(messages);
+            }
+            catch (Exception)
+            {
+                // ignored
+            }
+            await Context.Message.AddReactionAsync(new Emoji("✅"));
         }
     }
 }
