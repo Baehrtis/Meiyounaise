@@ -134,7 +134,7 @@ namespace Meiyounaise.Core.Commands
                             try
                             {
                                 var test = await channel.CreateInviteAsync();
-                                invite = test.Url + "(just created)";
+                                invite = test.Url + " (just created)";
                                 break;
                             }
                             catch (Exception)
