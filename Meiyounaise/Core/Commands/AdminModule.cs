@@ -114,5 +114,67 @@ namespace Meiyounaise.Core.Commands
             }
             await Context.Message.AddReactionAsync(new Emoji("✅"));
         }
+
+        [Command("servers")]
+        [RequireOwner]
+        public async Task Servers()
+        {
+            var result = "";
+            foreach (var guild in Context.Client.Guilds)
+            {
+                var invite = "";
+                var gResult = guild.Name;
+                try
+                {
+                    var invites = await guild.GetInvitesAsync();
+                    if (invites.Count == 0)
+                    {
+                        foreach (var channel in guild.Channels)
+                        {
+                            try
+                            {
+                                var test = await channel.CreateInviteAsync();
+                                invite = test.Url + "(just created)";
+                                break;
+                            }
+                            catch (Exception)
+                            {
+                                //ignore
+                            }
+                        }
+                        if (invite == "")
+                        {
+                            invite = $"Couldn't create Invite for Server {guild.Name}";
+                        }
+                    }
+                    else
+                    {
+                        invite = invites.First().Url;
+                    }
+                }
+                catch (Exception)
+                {
+                    invite = $"Couldn't retrieve Invite for server {guild.Name}";
+                }
+                result += gResult + "\t" + invite + "\n";
+            }
+
+            if (result.Length < 2048)
+            {
+                var embed = new EmbedBuilder()
+                    .WithDescription(result);
+                await ReplyAsync("", false, embed.Build());
+            }
+            else
+            {
+                var rts = result;
+                while (rts.Length >= 2000)
+                {
+                    await ReplyAsync(rts.Substring(0, 2000));
+                    rts = rts.Substring(2000);
+                }
+                await ReplyAsync(rts);
+            }
+        }
     }
 }
