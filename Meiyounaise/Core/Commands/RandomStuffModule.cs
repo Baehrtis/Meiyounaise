@@ -173,5 +173,29 @@ namespace Meiyounaise.Core.Commands
             }
             await ReplyAsync(result);
         }
+
+        [Command("ascii")]
+        public async Task Ascii([Remainder]string text)
+        {
+            string result;
+            var handler = new HttpClientHandler();
+            using (var httpClient = new HttpClient(handler, false))
+            {
+                using (var request = new HttpRequestMessage(HttpMethod.Get, "http://artii.herokuapp.com/make?text=" + text.Replace(" ","+")))
+                {
+                    var reponse = await httpClient.SendAsync(request);
+                    result = await reponse.Content.ReadAsStringAsync();
+                }
+            }
+
+            try
+            {
+                await ReplyAsync("```" + result + "```");
+            }
+            catch (Exception e)
+            {
+                await ReplyAsync(e.Message);
+            }
+        }
     }
 }

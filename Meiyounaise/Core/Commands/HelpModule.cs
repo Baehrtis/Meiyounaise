@@ -50,13 +50,22 @@ namespace Meiyounaise.Core.Commands
                 Options = new PaginatedAppearanceOptions()
                 {
                     JumpDisplayOptions = 0,
-                    Timeout = TimeSpan.FromSeconds(60)
+                    Timeout = TimeSpan.FromSeconds(60),
+                    DisplayInformationIcon = false
                 },
                 Pages = pages,
                 Author = new EmbedAuthorBuilder() { Name = Context.User.Username, IconUrl = Context.User.GetAvatarUrl() },
                 Title = $"Commands | Prefix is & or {Context.User.Mention}"
             };
             await PagedReplyAsync(msg);
+            try
+            {
+                await Context.Message.DeleteAsync();
+            }
+            catch (Exception)
+            {
+                //ignore
+            }
         }
 
         [Command("help")]
