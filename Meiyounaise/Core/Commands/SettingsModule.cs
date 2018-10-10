@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
 using System.Net.Http;
+using Meiyounaise.Core.Data;
+
 // ReSharper disable PossibleMultipleEnumeration
 // ReSharper disable PossibleNullReferenceException
 
@@ -31,6 +33,21 @@ namespace Meiyounaise.Core.Commands
                 }
             }
         }
+        //PREFIX
+        [Command("prefix"),Summary("Changes the Bot's prefix on the current guild")]
+        public async Task Prefix([Remainder]string prefix="")
+        {
+            var guild = Guilds.GetGuild(Context.Guild);
+            if (prefix=="")
+            {
+                await ReplyAsync($"The prefix on this guild is: `{guild.Prefix}`");
+                return;
+            }
+            guild.Prefix = prefix;
+            Guilds.SaveGuilds();
+            await Context.Message.AddReactionAsync(new Emoji("✅"));
+        }
+
         //STATUS
         [Command("status"), Summary("Changes the Bot's \"playing\" status.")]
         public async Task Status([Remainder]string ns)

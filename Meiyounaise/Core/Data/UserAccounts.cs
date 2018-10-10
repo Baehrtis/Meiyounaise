@@ -11,9 +11,9 @@ namespace Meiyounaise.Core.Data
         private static readonly string AccountsFile = Utilities.DataPath + "accounts.json";
         static UserAccounts()
         {
-            if (DataStorage.SaveExists(AccountsFile))
+            if (DataStorage<UserAccount>.SaveExists(AccountsFile))
             {
-                accounts = DataStorage.LoadUsers(AccountsFile).ToList();
+                accounts = DataStorage<UserAccount>.LoadData(AccountsFile).ToList();
             }
             else
             {
@@ -24,7 +24,7 @@ namespace Meiyounaise.Core.Data
 
         public static void SaveAccounts()
         {
-            DataStorage.SaveUsers(accounts,AccountsFile);
+            DataStorage<UserAccount>.SaveData(accounts,AccountsFile);
         }
 
         public static UserAccount GetAccount(SocketUser user)

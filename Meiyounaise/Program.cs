@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
@@ -7,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Discord.Addons.Interactive;
 using System.Reflection;
 using Meiyounaise.Core;
+using Meiyounaise.Core.Data;
 
 namespace Meiyounaise
 {
@@ -50,9 +51,9 @@ namespace Meiyounaise
             
             var message = (SocketUserMessage)m;
             int argPos = 0;
-            if (!(msg.HasStringPrefix("&", ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos))) return;
 
             var context = new SocketCommandContext(_client, msg);
+            if (!(msg.HasStringPrefix((Guilds.GetGuild(context.Guild).Prefix), ref argPos) || message.HasMentionPrefix(_client.CurrentUser, ref argPos))) return;
             if (AntiSpamService.ContainsUser(m.Author.Id))
             {
                 await context.Channel.SendMessageAsync(

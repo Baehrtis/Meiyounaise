@@ -5,20 +5,20 @@ using Newtonsoft.Json;
 
 namespace Meiyounaise.Core
 {
-    public static class DataStorage
+    public static class DataStorage<T>
     {
-        public static void SaveUsers(IEnumerable<UserAccount> accounts,string filePath)
+        public static void SaveData(IEnumerable<T> accounts,string filePath)
         {
             string json = JsonConvert.SerializeObject(accounts,Formatting.Indented);
             File.WriteAllText(filePath,json);
         }
 
-        public static IEnumerable<UserAccount> LoadUsers(string filePath)
+        public static IEnumerable<T> LoadData(string filePath)
         {
             if (!File.Exists(filePath)) return null;
             
             string json = File.ReadAllText(filePath);
-            return JsonConvert.DeserializeObject<List<UserAccount>>(json);
+            return JsonConvert.DeserializeObject<List<T>>(json);
         }
 
         public static bool SaveExists(string filePath)

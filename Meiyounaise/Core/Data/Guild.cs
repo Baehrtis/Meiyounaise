@@ -1,8 +1,8 @@
 ﻿namespace Meiyounaise.Core.Data
 {
-    public class UserAccount
+    public class Guild
     {
-        public string Last { get; set; }
+        public string Prefix { get; set; }
         public ulong Id { get; set; }
     }
 }
