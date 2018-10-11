@@ -32,6 +32,7 @@ namespace Meiyounaise
                 .AddSingleton(_client)
                 .AddSingleton<InteractiveService>()
                 .AddSingleton<AntiSpamService>()
+                .AddSingleton<RemindService>()
                 .BuildServiceProvider();
 
             _commands = new CommandService();
