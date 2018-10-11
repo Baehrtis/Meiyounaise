@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Discord;
 using Discord.Addons.Interactive;
 using Discord.Commands;
+using Meiyounaise.Core.Data;
 
 namespace Meiyounaise.Core.Commands
 {
@@ -32,7 +33,7 @@ namespace Meiyounaise.Core.Commands
                 {
                     var result = await cmd.CheckPreconditionsAsync(Context);
                     if (result.IsSuccess)
-                        description += $"&{cmd.Aliases.First()}\n";
+                        description += $"{Guilds.GetGuild(Context.Guild).Prefix}{cmd.Aliases.First()}\n";
                 }
 
                 if (!string.IsNullOrWhiteSpace(description) && module.Name != "Help")
@@ -55,7 +56,7 @@ namespace Meiyounaise.Core.Commands
                 },
                 Pages = pages,
                 Author = new EmbedAuthorBuilder() { Name = Context.User.Username, IconUrl = Context.User.GetAvatarUrl() },
-                Title = $"Commands | Prefix is & or {Context.User.Mention}"
+                Title = $"Commands | Prefix is **{Guilds.GetGuild(Context.Guild).Prefix}** or @{Context.Client.CurrentUser.Username}"
             };
             await PagedReplyAsync(msg);
             try
@@ -90,7 +91,7 @@ namespace Meiyounaise.Core.Commands
             {
                 var cmd = match.Command;
                 var prms = cmd.Parameters.Select(p => p.Name).ToList();
-                builder.AddField($"{i}: {string.Join(", ", cmd.Aliases)}",
+                builder.AddField($"{i}: {Guilds.GetGuild(Context.Guild).Prefix}{string.Join(", ", cmd.Aliases)}",
                     prms.Count == 0
                         ? $"Parameters: None\nSummary: {cmd.Summary}"
                         : $"Parameters: {string.Join(", ", prms)}\nSummary: {cmd.Summary}");

@@ -179,7 +179,7 @@ namespace Meiyounaise.Core.Commands
             typing.Dispose();
             await Context.Channel.SendFileAsync(Utilities.DataPath + "ss.jpg");
             stopwatch.Stop();
-            await om.ModifyAsync(x => x.Content = $"⏲ Took {stopwatch.Elapsed.Milliseconds} milliseconds");
+            await om.ModifyAsync(x => x.Content = $"⏲ Took {stopwatch.Elapsed.Seconds},{stopwatch.Elapsed.Milliseconds} seconds");
             File.Delete(Utilities.DataPath + "ss.jpg");
         }
         
