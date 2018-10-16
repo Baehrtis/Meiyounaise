@@ -57,7 +57,7 @@ namespace Meiyounaise.Core.Commands
             string imageFilePath = Utilities.DataPath + "emotion.png";
             try
             {
-                await DownloadAsync(new Uri(url), imageFilePath);
+                await Utilities.DownloadAsync(new Uri(url), imageFilePath);
             }
             catch (Exception e)
             {
@@ -125,24 +125,7 @@ namespace Meiyounaise.Core.Commands
             BinaryReader binaryReader = new BinaryReader(fileStream);
             return binaryReader.ReadBytes((int)fileStream.Length);
         }
-        public static async Task DownloadAsync(Uri requestUri, string filename)
-        {
-            HttpClientHandler handler = new HttpClientHandler();
-            using (var httpClient = new HttpClient(handler, false))
-            {
-                using (var request = new HttpRequestMessage(HttpMethod.Get, requestUri))
-                {
-                    using (
-                        Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),
-                        stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, 4096,
-                            true))
-                    {
-                        await contentStream.CopyToAsync(stream);
-                    }
-                }
-            }
-        }
-
+       
         //SCREENSHOT
         [Command("ss"), Summary("Screenshots a Website for you.")]
         [RequireBotPermission(ChannelPermission.AttachFiles)]

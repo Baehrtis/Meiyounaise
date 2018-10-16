@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Discord;
 using Discord.Commands;
-using System.Net.Http;
 using Meiyounaise.Core.Data;
 
 // ReSharper disable PossibleMultipleEnumeration
@@ -15,24 +14,7 @@ namespace Meiyounaise.Core.Commands
     [Name("Bot Settings")]
     public class SettingsModule : ModuleBase<SocketCommandContext>
     {
-        public static async Task DownloadAsync(Uri requestUri, string filename)
-        {
-            GC.Collect();
-            GC.WaitForPendingFinalizers();
-            HttpClientHandler handler = new HttpClientHandler();
-            using (var httpClient = new HttpClient(handler, false))
-            {
-                using (var request = new HttpRequestMessage(HttpMethod.Get, requestUri))
-                {
-                    using (
-                        Stream contentStream = await (await httpClient.SendAsync(request)).Content.ReadAsStreamAsync(),
-                        stream = new FileStream(filename, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
-                    {
-                        await contentStream.CopyToAsync(stream);
-                    }
-                }
-            }
-        }
+        
         //PREFIX
         [Command("prefix"),Summary("Changes the Bot's prefix on the current guild")]
         public async Task Prefix([Remainder]string prefix="")
@@ -76,11 +58,11 @@ namespace Meiyounaise.Core.Commands
                 var durl = Utilities.GetImageFromCurrentOrLastMessage(url, message, Context);
                 GC.Collect();
                 GC.WaitForPendingFinalizers();
-                await DownloadAsync(new Uri(durl), path);
+                await Utilities.DownloadAsync(new Uri(durl), path);
                 var avatar = new FileStream(Utilities.DataPath + "icon.png", FileMode.Open);
                 try
                 {
-                    await (Context.Client.CurrentUser).ModifyAsync(x => x.Avatar = new Image(avatar));
+                    await Context.Client.CurrentUser.ModifyAsync(x => x.Avatar = new Image(avatar));
                     var reactTo = lm.FirstOrDefault() as IUserMessage;
                     await reactTo.AddReactionAsync(new Emoji("✅"));
                 }
