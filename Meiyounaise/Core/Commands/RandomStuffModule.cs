@@ -231,5 +231,34 @@
                 await Context.Channel.SendFileAsync(path, $"From {randomDate.ToLongDateString()}");
                 File.Delete(Utilities.DataPath + "dilbert.gif");
             }
+
+            //GARFIELD
+            [Command("garfield"),Summary("Returns a random or specified Garfield Strip. Format: garfield (year) (month) (day)")]
+            public async Task Garfield(string year = "", string month = "", string day = "")
+            {
+                var path = Utilities.DataPath + "garfield.gif";
+                var rand = new Random();
+                var randomDate = new DateTime(1978, 6, 19);
+                var range = (DateTime.Today - randomDate).Days;
+                randomDate = randomDate.AddDays(rand.Next(range));
+                if (year != "")
+                {
+                    randomDate = new DateTime(Convert.ToInt32(year), randomDate.Month, randomDate.Day);
+                    if (month != "")
+                    {
+                        randomDate = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), randomDate.Day);
+                        if (day != "")
+                        {
+                            randomDate = new DateTime(Convert.ToInt32(year), Convert.ToInt32(month), Convert.ToInt32(day));
+                        }
+                    }
+                }
+                //var list = Utilities.GetImageUrlsFromWebsite($"https://garfield.com/comic/{randomDate:yyyy'/'m'/'d}");
+                GC.Collect();
+                GC.WaitForPendingFinalizers();
+                await Utilities.DownloadAsync(new Uri($"https://d1ejxu6vysztl5.cloudfront.net/comics/garfield/{randomDate.Year}/{randomDate:yyyy-MM-dd}.gif"), path);
+                await Context.Channel.SendFileAsync(path, $"From {randomDate.ToLongDateString()}");
+                File.Delete(Utilities.DataPath + "garfield.gif");
+            }
         }
     }

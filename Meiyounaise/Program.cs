@@ -27,6 +27,7 @@ namespace Meiyounaise
             _client = new DiscordSocketClient();
 
             await _client.LoginAsync(TokenType.Bot, token);
+            await _client.SetGameAsync("🌚Booting Up🌚");
             await _client.StartAsync();
             _services = new ServiceCollection()
                 .AddSingleton(_client)
@@ -40,7 +41,7 @@ namespace Meiyounaise
             _client.MessageReceived += HandleCommandAsync;
             _client.Ready += Ready;
             _client.Log += Log;
-
+            
             await Task.Delay(-1);
         }
 
@@ -64,7 +65,24 @@ namespace Meiyounaise
             AntiSpamService.RateLimitUser(m);
             var result = await _commands.ExecuteAsync(context, argPos, _services);
             if (!result.IsSuccess)
-                await context.Channel.SendMessageAsync($"Something went wrong. Error: `{result.ErrorReason}`");
+                if (result.ErrorReason.Contains("User requires"))
+                {
+                    //var path = Utilities.DataPath + "denied.png";
+                    //await context.Channel.SendFileAsync(path, $"`{result.ErrorReason}`");
+                    EmbedBuilder embed = new EmbedBuilder()
+                        .WithDescription(result.ErrorReason)
+                        .WithColor(255, 0, 0)
+                        .WithImageUrl("https://cdn.discordapp.com/attachments/386271220548501505/501867295363301376/denied.png");
+                    await context.Channel.SendMessageAsync("", false, embed.Build());
+                }
+                else
+                {
+                    EmbedBuilder embed = new EmbedBuilder()
+                        .WithDescription(result.ErrorReason)
+                        .WithColor(255, 0, 0);
+                    await context.Channel.SendMessageAsync("", false, embed.Build());
+                }
+                
         }
 
         private async Task Log(LogMessage msg)
